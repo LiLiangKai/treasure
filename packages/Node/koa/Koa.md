@@ -164,7 +164,7 @@ app.use(async (ctx,next)=> {
 
 洋葱圈模型
 
-![洋葱图](D:\JavaScript\Node.Js\笔记\洋葱图.jpg)
+![洋葱图](./洋葱图.jpg)
 
 ```
 app.use(async (ctx, next) => {
