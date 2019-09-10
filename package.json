@@ -1,0 +1,8 @@
+{
+  "name": "treasure",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/LiLiangKai/treasure.git",
+  "author": "LiLiangKai <1147036010@qq.com>",
+  "license": "MIT"
+}
