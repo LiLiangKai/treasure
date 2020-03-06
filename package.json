@@ -4,5 +4,11 @@
   "main": "index.js",
   "repository": "https://github.com/LiLiangKai/treasure.git",
   "author": "LiLiangKai <1147036010@qq.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "serve": "npx docsify serve"
+  },
+  "dependencies": {
+    "docsify": "^4.10.2"
+  }
 }

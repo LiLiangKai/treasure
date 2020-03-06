@@ -59,7 +59,8 @@ oscillator.frequency.value = 400  // 音调频率400Hz，出声关键，不同�
 
 ```js
 oscillator.start(audioCtx.currentTime)  // 播放
-oscillator.stop(audioCtx.currentTime + 2) // 停止
+oscillator.stop() // 停止
+oscillator.stop(audioCtx.currentTime + 2) // 播放两秒后停止
 ```
 
 ### 完整例子
@@ -101,6 +102,7 @@ oscillator.stop(audioCtx.currentTime + 2)
 - [`AudioContext.close()`](https://developer.mozilla.org/zh-CN/docs/Web/API/AudioContext/close) - 关闭一个音频环境, 释放任何正在使用系统资源的音频。
 - [`AudioContext.createOscillator()`](https://developer.mozilla.org/zh-CN/docs/Web/API/AudioContext/createOscillator) - 创建一个[`OscillatorNode`](https://developer.mozilla.org/zh-CN/docs/Web/API/OscillatorNode), 它表示一个周期性波形，基本上来说创造了一个音调。
 - [`AudioContext.createGain()`](https://developer.mozilla.org/zh-CN/docs/Web/API/AudioContext/createGain) - 创建一个[`GainNode`](https://developer.mozilla.org/zh-CN/docs/Web/API/GainNode),它可以控制音频的总音量。
+- [`AudioContext.createAnalyser()`](https://developer.mozilla.org/zh-CN/docs/Web/API/AudioContext/createAnalyser) - 创建一个[`AnalyserNode`](https://developer.mozilla.org/zh-CN/docs/Web/API/AnalyserNode)，它可以用来显示音频时间和频率的数据。
 
 ## 拓展
 
@@ -134,9 +136,9 @@ The AudioContext was not allowed to start. ...
 
 - [让你的网页开口说话 —— audioContext API](https://xiaotianxia.github.io/blog/vuepress/js/useful_webapis_audiocontext.html?_=193678675665)
 
+  
 
-
-
+*ps: [demo地址](https://github.com/LiLiangKai/react-piano)*
 
 
 
