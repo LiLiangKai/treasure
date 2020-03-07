@@ -8,7 +8,7 @@ web页面中除了`audio`、`video`等标签外可以发出声音，还有音频
 
 ## 如何实现出声
 
-![AudioContext](./images/AudioContext.jpg)
+![AudioContext](./assets/AudioContext.jpg)
 
 首先需要一个音频环境（AudioContext），接着需要有一个音频输入（input），再加上处理程序（effects），然后是音频输出（destination），最后把它们连接起来（connection），即可实现出声。
 
@@ -110,7 +110,7 @@ oscillator.stop(audioCtx.currentTime + 2)
 
 通过以上方式就可以发出声音了，但如何发出哆瑞咪发嗦啦西这些声音？首先需要知道哆瑞咪发嗦啦西这些声音对应的频率是多少，然后将 `oscillator.frequency.value` 的值改成对应声音的频率即可。
 
-![乐谱频率](./images/toneMap.jpg)
+![乐谱频率](./assets/toneMap.jpg)
 
 ### 无法出声？
 
@@ -128,7 +128,7 @@ The AudioContext was not allowed to start. ...
 
 ### 兼容性
 
-![AudioContext兼容性](./images/audioContext-caniuse.jpg)
+![AudioContext兼容性](./assets/audioContext-caniuse.jpg)
 
 ### 参考
 
