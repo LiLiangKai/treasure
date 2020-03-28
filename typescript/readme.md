@@ -1,1 +1,1 @@
-# TypeScript 知识宝库
+# TypeScript 知识

@@ -1,3 +1,3 @@
 - [介绍](./)
-- [Node 宝库](./node/)
+- [Node](./node/)
   - [Koa](./node/koa/)

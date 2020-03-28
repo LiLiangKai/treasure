@@ -1,4 +1,4 @@
-# Three.js 系列学习之基础篇（一）
+# Three.js 系列学习之基础篇
 
 ## 一、Three.js 介绍
 
@@ -31,6 +31,13 @@
 ### 3、渲染器 `renderer`
 
 
+### 1、几何 `geometry`
 
-## 三、例子
+
+
+### 2、材质 `material`
+
+
+
+### 3、光源 `light`
 

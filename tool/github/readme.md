@@ -18,12 +18,6 @@
 
 快速而强大的 CSV（分隔文本）解析器，可以优雅地处理大型文件和格式错误的输入。
 
-#### [inquirer](https://github.com/SBoudrias/Inquirer.js)
-
-> A collection of common interactive command line user interfaces.
-
-常用交互式命令行用户界面的集合。
-
 #### [deploy-toolkit](https://github.com/oe/deploy-toolkit#readme)
 
 > A toolkit make it easy(with plain config) to manipulate(upload/download/exec command) server via `ssh`, can be used to deploy stuffs or CI/CD
