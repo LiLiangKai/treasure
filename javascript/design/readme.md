@@ -4,18 +4,19 @@
 
 ## 设计模式
 
+- [工厂模式](./javascript/design/)
 - [单例模式](./javascript/design/single/)
+- [代理模式](./javascript/design/proxy/)
+- [观察者模式/发布-订阅模式](./javascript/design/)
 - [策略模式](./javascript/design/)
-- [代理模式](./javascript/design/)
-- [发布-订阅模式](./javascript/design/)
+- [状态模式](./javascript/design/)
+- [装饰者模式](./javascript/design/)
 - [命令模式](./javascript/design/)
 - [组合模式](./javascript/design/)
 - [模板方法模式](./javascript/design/)
 - [享元模式](./javascript/design/)
 - [职责模式](./javascript/design/)
 - [中介者模式](./javascript/design/)
-- [装饰者模式](./javascript/design/)
-- [状态模式](./javascript/design/)
 
 ## 设计原则和编程技巧
 
@@ -31,3 +32,8 @@ SRP原则的优点是降低了单个对象或方法的复杂度，有助于代�
 
 ### 最少知识（LKP）原则
 
+> 一个软件实体应当尽可能少地与其他实体发生相互作用。
+
+SRP原则指导我们将对象划分成较小的粒度，用于提高对象的复用性。但对象越多，对象之间的联系可能会变得更加复杂，修改一个对象则很可能会影响到与它相互作用的其他对象。
+
+LKP原则要求我们在设计程序时，应当尽可能减少对象之间的交互。如果两个或多个对象之间不用直接通信，则这两个或多个对象就不要发生直接的相互联系。常见的做法时引入一个第三者对象来承担这些对象之间的通信作用。

@@ -2,3 +2,4 @@
 - [JavaScript](./javascript/)
   - [javascrip 设计模式](./javascript/design/)
     - [单例模式](./javascript/design/single/)
+    - [代理模式](./javascript/design/proxy/)
