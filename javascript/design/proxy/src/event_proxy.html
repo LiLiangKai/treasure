@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>事件代理</title>
+</head>
+
+<body>
+  <ul id="list">
+    <li>item one</li>
+    <li>item two</li>
+    <li>item three</li>
+    <li>item four</li>
+    <li>item five</li>
+  </ul>
+
+  <script>
+    // const lis = document.querySelectorAll( '#list li' )
+    // for ( let i = 0; i < lis.length; i++ ) {
+    //   const curLi = lis[ i ]
+    //   curLi.addEventListener( 'click', () => {
+    //     alert( curLi.innerText )
+    //   } )
+    // }
+    const ul = document.getElementById( 'list' )
+    ul.addEventListener( 'click', ( e ) => {
+      const target = e.target
+      alert( target.innerText )
+    } )
+
+    // setTimeout( () => {
+    //   const li = document.createElement( 'li' )
+    //   li.innerText = 'item six'
+    //   ul.appendChild( li )
+    // }, 2000 )
+  </script>
+</body>
+
+</html>

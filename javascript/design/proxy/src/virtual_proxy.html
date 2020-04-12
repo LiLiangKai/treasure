@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>虚拟代理</title>
+  <style>
+    img {
+      display: inline-block;
+      min-width: 200px;
+      height: 200px;
+    }
+
+    img.loading {
+      background-color: #ddd;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <img id="image">
+  </div>
+  <script>
+    const image = document.getElementById( 'image' )
+
+    const loadImage = {
+      setSrc: ( imageNode, imageSrc ) => {
+        imageNode.src = imageSrc
+      }
+    }
+
+    const proxyImage = {
+      setSrc: ( imageNode, imageSrc ) => {
+        if ( !imageNode || !imageSrc ) return
+        imageNode.classList.add( 'loading' )
+
+        const virtualImage = new Image()
+        virtualImage.onload = () => {
+          imageNode.classList.remove( 'loading' )
+          loadImage.setSrc( imageNode, imageSrc )
+        }
+        virtualImage.src = imageSrc
+      }
+    }
+
+    const imageSrc = '../assets/proxy.png'
+    proxyImage.setSrc( image, imageSrc )
+  </script>
+</body>
+
+</html>
