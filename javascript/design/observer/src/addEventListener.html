@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>addEventListener</title>
+</head>
+
+<body>
+  <script>
+    class Button {
+      constructor() {
+        this.button = document.createElement( 'button' )
+        this.button.addEventListener( 'click', this.click )
+      }
+
+      destory = () => {
+        this.button.removeEventListener( 'click', this.click )
+        this.button = null
+      }
+
+      click = () => {
+        console.log( 'button click' )
+        this.destory()
+      }
+    }
+    const button = new Button()
+    button.click()
+  </script>
+</body>
+
+</html>

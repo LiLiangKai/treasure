@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>装饰器模式</title>
+</head>
+
+<body>
+  <script>
+    const button = ( function () {
+      const button = document.createElement( 'button' )
+      button.innerText = 'button'
+      button.addEventListener( 'click', () => {
+        alert( 1 )
+      } )
+      return button
+    } )()
+
+    document.body.appendChild( button )
+
+    // function decoratorButton( button ) {
+    //   if ( !button ) return button
+    //   const newButton = button.cloneNode( true )
+    //   newButton.addEventListener( 'click', () => {
+    //     document.body.style.backgroundColor = `#${ Math.random().toString( 16 ).slice( 9 ) }`
+    //   } )
+    //   return newButton
+    // }
+
+    function decoratorButton( button ) {
+      if ( !button ) return button
+      button.addEventListener( 'click', () => {
+        document.body.style.backgroundColor = `#${ Math.random().toString( 16 ).slice( 9 ) }`
+      } )
+      return button
+    }
+
+    document.body.appendChild( decoratorButton( button ) )
+
+  </script>
+</body>
+
+</html>
