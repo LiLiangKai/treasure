@@ -50,6 +50,7 @@
 
 - [单例模式](./javascript/design/single/)
 - [代理模式](./javascript/design/proxy/)
+- [观察者模式](./javascript/design/observer/)
 - [装饰器模式](./javascript/design/decorator/)
 
 参考：[JavaScript 设计模式核⼼原理与应⽤实践](https://juejin.im/book/5c70fc83518825428d7f9dfb)
