@@ -89,4 +89,11 @@ webpack -c webpack.config.js
 
 ![webpack build](./assets/webpack-build.png)
 
-*参考：[webpack](https://webpack.docschina.org/)*
+
+## 相关阅读
+
+- [Webpack 之 loader](./javascript/webpack/loader/)
+
+## 参考资料
+
+- [webpack](https://webpack.docschina.org/)
