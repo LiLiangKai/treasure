@@ -41,7 +41,6 @@ var isPalindrome = function ( x ) {
     tmp = (tmp - mod) / 10
     n = n * 10 + mod
   }
-  console.log(n)
   if(n === x) return true
   return false
 }

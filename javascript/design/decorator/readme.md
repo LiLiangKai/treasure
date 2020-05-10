@@ -70,7 +70,7 @@ document.body.appendChild( decoratorButton( button ) )
 
 
 
-## 生成实践
+## 生产实践
 
 ### React高阶组件HOC
 

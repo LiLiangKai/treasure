@@ -855,3 +855,34 @@ pre::after {
   text-align: right;
   top: 0;
 }
+
+#return-top {
+  height: 50px;
+  width: 50px;
+  line-height: 50px;
+  display: none;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  font-size: 18px;
+  text-align: center;
+  color: #999;
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #fff;
+  -webkit-box-shadow: 0 3px 10px 0 rgba(137,145,157,.6);
+  box-shadow: 0 3px 10px 0 rgba(137,145,157,.6);
+  border-radius: 2px;
+  z-index: 999;
+  cursor: pointer;
+  -webkit-transition: all .3s;
+  transition: all .3s;
+}
+
+#return-top:hover {
+  color: var(--theme-color, #42b983);
+}

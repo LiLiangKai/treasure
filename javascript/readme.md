@@ -7,3 +7,4 @@
 - [Taro](/javascript/taro/)
 - [Three](/javascript/threejs/)
 - [webpack](./javascript/webpack/)
+- [算法](./javascript/leetcode/)
