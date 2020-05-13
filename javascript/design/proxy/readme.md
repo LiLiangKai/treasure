@@ -1,10 +1,10 @@
 # Javascript 设计模式之代理模式
 
-> 定义：为一个对象提供一个替代对象，以便控制对原对象的访问。
+> 定义：为一个对象提供一个替代对象，以便控制对目标对象的访问。
 
 代理模式是一种非常有用的设计模式，在生活中也存在许多应用代理模式的场景，比如科学上网, 代购等。
 
-使用代理模式的原因是当我们不方便直接访问一个对象时，提供一个代理对象来控制对原对象的访问，由代理对象对请求作出一些处理，再把请求转交给原对象。
+使用代理模式的原因是当我们不方便直接访问一个对象时，提供一个代理对象来控制对目标对象的访问，由代理对象对请求作出一些处理，再把请求转交给目标对象。
 
 ![proxy](./assets/proxy.png)
 
@@ -101,11 +101,11 @@ customerA.buyMacPro( B )
 
 本例中的 `customerA` 对象仅负责发起一个请求，即调用了 `buyMacPro` 方法购买 Mac笔记本，而真正的购买过程由对象B处理，该过程中对象B调用 Apple对象的 `sale` 方法监听Mac笔记本的发售情况，一旦发售，则调用 Apple对象的 `macPro` 购买Mack笔记本。
 
-以上例子中， `customerA` 对象是一个访问者对象，`Apple`对象是原对象，B对象则是代理对象。访问者仅负责发起访问原对象的请求，并接受最终的请求处理结果，而对访问者发起的请求是全权由代理对象负责处理，由代理对象对原对象进行访问操作（该过程对访问者对象来说是透明的），并将访问操作的最终结果返回给访问者对象。
+以上例子中， `customerA` 对象是一个访问者对象，`Apple`对象是目标对象，B对象则是代理对象。访问者仅负责发起访问目标对象的请求，并接受最终的请求处理结果，而对访问者发起的请求是全权由代理对象负责处理，由代理对象对目标对象进行访问操作（该过程对访问者对象来说是透明的），并将访问操作的最终结果返回给访问者对象。
 
-使用的代理的好处是对访问者来说，代理对象和原对象是一致的， 代理接手请求的过程对于访问者来说是透明的，访问者并不清楚代理对象和原对象的区别，这样做有两个好处：
+使用的代理的好处是对访问者来说，代理对象和目标对象是一致的， 代理接手请求的过程对于访问者来说是透明的，访问者并不清楚代理对象和目标对象的区别，这样做有两个好处：
 - 访问者可以放心地请求代理，他只关心是否能得到想要的结果。
-- 在任何使用原对象的地方都可以替换成使用代理。
+- 在任何使用目标对象的地方都可以替换成使用代理。
 
 使用代理模式的意义是可以更好的遵循SOLID原则中的单一职责原则，
 
@@ -262,9 +262,115 @@ console.timeEnd( 'fibonacci' )
 
 ### 保护代理
 
-一般来说，如果让访问者直接访问原对象，可能会带来一些意想不到的情况，因为对原对象来说，访问者的访问请求是不可预测，为了避免访问者对原对象做出一些非法的操作，我们可以在访问中和原对象中间增加代理对象，用来拦截过滤访问者的请求，仅对合法的请求作出响应。
+一般来说，如果让访问者直接访问目标对象，可能会带来一些意想不到的情况，因为对目标对象来说，访问者的访问请求是不可预测，为了避免访问者对目标对象做出一些非法的操作，我们可以在访问中和目标对象中间增加代理对象，用来拦截过滤访问者的请求，仅对合法的请求作出响应。
 
-使用代理模式时，我们可以优先考虑使用ES6的`proxy`，具体用法请参考：https://es6.ruanyifeng.com/#docs/proxy
+使用保护代理模式时，我们可以优先考虑使用ES6的`Proxy`。`Proxy`可以在目标对象上设置一层拦截，任何想要访问目标对象的地方，都必须先通过这层拦截。利用`Proxy`，我们可以对外界的访问进行过滤或改写，避免一些非法的访问造成不可预测的错误。
+
+Proxy 支持的拦截操作共有一共 13 种，这里主要介绍下 `get` 和 `set`
+
+- `get(target, propKey, receiver)` - 拦截对象属性的读取
+- `set(target, propKey, value, receiver)` - 拦截对象属性的设置
+
+#### get 方法
+
+`get` 方法用于拦截对象的读取，接受的三个参数，分别是目标对象、属性名和 proxy 实例本身。
+
+一个简单的例子
+
+```js
+const target = {
+  name: 'Jack',
+}
+
+const targetProxy = new Proxy(target, {
+  get: function (target, propKey) {
+    if(target.hasOwnProperty(propKey)) {
+      return target[propKey]
+    } else {
+      return false
+    }
+  }
+})
+
+console.log(targetProxy.name) // Jack
+console.log(targetProxy.age) // false
+```
+
+使用 `get` 方法，实现数组元素的读取，满足以下要求：
+
+- 使用非数值索引读取元素时，抛出错误
+- 索引值大于数组长度时，再次从数组元素第一位开始读取
+- 索引值小于0时，以逆序方式读取
+
+代码如下：
+
+```js
+const target = [1,2,3,4,5,6]
+
+const targetProxy = new Proxy(target, {
+  get: (target, index) => {
+    index = Number(index)
+    if (isNaN(index)) {
+      throw '无效的数组索引'
+    }
+    const length = target.length
+    if(index < 0) {
+      return target[length + index%length]
+    } else if ( index > length ) {
+      return target[ index % length ]
+    }
+    return target[index]
+  }
+})
+```
+
+#### set 方法
+
+`set` 方法用来拦截某个属性的赋值操作，可以接受四个参数，依次为目标对象、属性名、属性值和 Proxy 实例本身
+
+一个简单的例子
+
+```js
+const target = {
+  name: 'Jack',
+}
+
+const targetProxy = new Proxy(target, {
+  set: (target, propKey, propValue) => {
+    if(propKey === 'age') {
+      if(typeof propValue !== 'number') {
+        throw 'The age is not an intege'
+      }
+      if(propValue < 0 || propValue > 100) {
+        throw 'The age is invalid'
+      }
+    }
+    target[propKey] = propValue
+  }
+})
+
+targetProxy.age = 25
+console.log(targetProxy.age) // 25
+targetProxy.age = 300 // 报错
+```
+
+使用 `set` 实现只能存放number类型的数组
+
+```js
+const target = []
+
+const targetProxy = new Proxy(target, {
+  set: (target, key, value) => {
+    const index = Number( key )
+    if ( !isNaN( index ) && typeof value === 'number') {
+      target[key] = value
+    }
+    return value === false ? -1 : value
+  }
+})
+```
+
+相关知识请参考：https://es6.ruanyifeng.com/#docs/proxy
 
 ## 小结
 
