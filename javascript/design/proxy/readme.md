@@ -253,7 +253,7 @@ const fibonacci = (function () {
 })()
 
 console.time( 'fibonacci' )
-console.log( '5: ', fibonacci( 20 ) ) // 20:  6765
+console.log( '20: ', fibonacci( 20 ) ) // 20:  6765
 console.timeEnd( 'fibonacci' )
 // 平均耗时5ms左右
 ```

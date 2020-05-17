@@ -36,6 +36,7 @@ class Publisher {
     this.observers.push(observer)
   }
 
+  // 移除订阅者
   remove ( observer ) {
     if ( !observer || typeof observer !== 'object' ) return
     const idx = this.observers.findIndex(obs => obs === observer)
@@ -44,6 +45,7 @@ class Publisher {
     this.observers.splice(idx, 1)
   }
 
+  // 通知订阅者
   notify () {
     console.log('notify all observer')
     this.observers.map(obs => {
@@ -56,6 +58,7 @@ class Publisher {
 接着实现订阅者对象，订阅者一般作为被动的一方，职能相对简单——被通知，再执行。我们已经在发布者中做了方法的调用，那么在订阅者里则需要做方法的定义，代码如下：
 
 ```js
+/** 订阅者对象 */
 class Observer {
   constructor (name) {
     this.name = name
@@ -99,11 +102,7 @@ const button = new Button()
 button.click()
 ```
 
-从例子中我们可以得出事件通信至少包含三个动作：
-
-- 监听：对应 `addEventListener`
-- 移除：对应 `removeEventListener`
-- 触发：对应 `button.click()`
+t
 
 `addEventListener`事件监听方法仅使用于浏览器，对于非浏览器，如果想要使用事件通信机制，可能需要借助第三方库或自己实现，根据事件通信的三个动作，我们完全可以实现一个简易版的事件通信机制。
 
