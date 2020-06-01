@@ -6,7 +6,7 @@
   "author": "LiLiangKai <1147036010@qq.com>",
   "license": "MIT",
   "scripts": {
-    "serve": "npx docsify serve"
+    "serve": "npx docsify serve --port 5050"
   },
   "dependencies": {
     "docsify-cli": "^4.4.0"
