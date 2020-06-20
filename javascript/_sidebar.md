@@ -1,5 +1,6 @@
 - [介绍](./)
 - [JavaScript](./javascript/)
+  - [基础](./javascript/base/)
   - [ES6](./javascript/es6/)
   - [javascrip 设计模式](./javascript/design/)
   - [React](/javascript/react/)

@@ -31,8 +31,8 @@ cnpm i koa --save
 例子：
 
 ```
-const koa = require('koa);
-cosnt app = new koa();
+const koa = require('koa');
+const app = new koa();
 
 //配置中间件
 app.use(async (ctx) => {

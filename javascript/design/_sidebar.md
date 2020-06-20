@@ -1,6 +1,6 @@
 - [介绍](./)
 - [JavaScript](./javascript/)
-  - [javascrip 设计模式](./javascript/design/)
+- [javascrip 设计模式](./javascript/design/)
   - [单例模式](./javascript/design/single/)
   - [代理模式](./javascript/design/proxy/)
   - [观察者模式](./javascript/design/observer/)
