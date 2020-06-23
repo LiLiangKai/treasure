@@ -48,7 +48,9 @@ bar()
 
 #### 确定this指向
 
-根据函数的调用方式，确定this指向。在全局下，浏览器的this执行window，node的this执行global。
+在全局执行上下文中，浏览器的this指向window，node的this指向global。
+
+函数执行上下文的this根据函数的调用方式，确定this指向。具体有：默认绑定、隐式绑定、显示绑定、new绑定、箭头函数等。
 
 #### 创建变量对象
 
