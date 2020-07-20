@@ -37,7 +37,7 @@
         renderer: {
           image: function ( url, title, alt ) {
             var href = url
-            if ( !/^\//.test( url ) ) {
+            if ( !/^\//.test( url ) && !/^http/.test(url)) {
               href =
                 location.pathname +
                 location.hash
