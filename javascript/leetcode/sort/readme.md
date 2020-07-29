@@ -57,7 +57,7 @@ function bubbleSort ( array ) {
 }
 ```
 
-#### 分析
+分析
 
 比较和交换需要一个以常量为界的时间，我们称之为c。标准冒泡排序中有两个嵌套循环。外循环正好运行N次迭代。 但内部循环运行变得越来越短：
 
@@ -76,7 +76,7 @@ function bubbleSort ( array ) {
 - 用第 L 项交换X，
 - 将下限 L 增加1并重复步骤1直到 L = N-2。
 
-![bubble sort](./assets/selectionSort.gif)
+![selection sort](./assets/selectionSort.gif)
 
 代码实现
 
@@ -98,3 +98,39 @@ function selectionSort (array) {
 ```
 
 时间复杂度： O(n²) 
+
+## 插入排序
+
+算法步骤：
+
+1、将第一待排序序列第一个元素看做一个有序序列，把第二个元素到最后一个元素当成是未排序序列。
+
+2、从头到尾依次扫描未排序序列，将扫描到的每个元素插入有序序列的适当位置。（如果待插入的元素与有序序列中的某个元素相等，则将待插入元素插入到相等元素的后面。）
+
+![insertion sort](./assets/insertionSort.gif)
+
+代码实现：
+
+```js
+function insertionSort (array) {
+  for(let i=1; i<array.length; i++) {
+    const current = array[i]
+    let prevIdx = i - 1
+    while(prevIdx >= 0 && array[prevIdx] > current) {
+      array[prevIdx+1] = array[prevIdx]
+      prevIdx--
+    }
+    array[prevIdx+1] = current
+  }
+  return array
+}
+```
+
+分析：
+
+外循环执行N-1次，但内循环执行的次数取决于输入：
+
+- 在最好的情况下，数组已经排序并且（a [j]> X）总是为假所以不需要移位数据，并且内部循环运行在O（1），
+- 在最坏的情况下，数组被反向排序并且（a [j]> X）始终为真插入始终发生在数组的前端，并且内部循环以O（N）运行。
+
+因此，最佳情况时间是O(N × 1) = O(N) ，最坏情况时间是O(N × N) = O(N^2).
