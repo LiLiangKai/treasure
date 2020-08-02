@@ -1,3 +1,5 @@
+> 20207/29 by Hiya
+
 # electron-react-boilerplate 脚手架
 
 > Electron React Boilerplate uses Electron, React, Redux, React Router, Webpack and React Hot Loader for rapid application development (HMR).
