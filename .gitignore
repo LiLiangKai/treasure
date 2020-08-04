@@ -1,3 +1,4 @@
 node_modules
 dist
 treasure.tar.gz
+deploy.js

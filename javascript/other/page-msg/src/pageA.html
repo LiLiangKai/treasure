@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PageA</title>
+</head>
+<body>
+  <div id="app">
+    <div>This is page A</div>
+    <div><button id="goto">goto pageB</button></div>
+  </div>
+
+  <script>
+    const gotoBtn = document.getElementById('goto')
+    window.name = 'PageA'
+
+    gotoBtn.onclick = () => {
+      window.open('./pageB.html', 'PageB')
+    }
+
+    window.addEventListener('hashChange', () => {
+      console.log('close')
+    })
+
+  </script>
+</body>
+</html>
