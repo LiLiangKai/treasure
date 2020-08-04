@@ -16,7 +16,7 @@ javascript的数据类型有：`number`, `string`, `boolean`, `undefined`, `obje
 
 引用类型有：`object`，主要包含：对象，数组，函数，正则
 
-引用类型值大小不固定，但内存地址的大小是固定的，引用类型的值是存储在堆内存中，栈内存存储的是指向该引用类型在堆内存的地址。对引用类型可以按地址访问。
+引用类型值大小不固定，但内存地址的大小是固定的，引用类型的值是存储在堆内存中，栈内存存储的是指向该引用类型值在堆内存的地址。对引用类型可以按地址访问。
 
 ## 类型转换
 
@@ -30,4 +30,33 @@ javascript的数据类型有：`number`, `string`, `boolean`, `undefined`, `obje
 
 ### toNumber
 
+常见值的转换：
+
+```js
+Number(false)     // 0
+Number(true)      // 1
+Number([])        // 0
+Number([1])       // 1
+Number([1,2])     // NaN
+Number({})        // NaN
+Number('')        //0
+Number(undefined) // NaN
+Number(null)      // 0
+Number('123')     // 123
+Number('123abc')  // NaN
+```
+
 ### toString
+
+常见值的转换：
+
+```js
+String(false)      // 'false'
+String(true)       // 'true'
+String(null)       // 'null'
+String(undefined)  // 'undefined'
+String([])         // ''
+String([1])        // '1'
+String([1,2])      // '1,2'
+String({})         // '[object Object]'
+```
