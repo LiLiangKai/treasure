@@ -148,7 +148,7 @@ setTimeout
 
 微任务主要有 `Promise` 和 `process.nextTick`。
 
-![micro-task](./assets/micro-task.jpg)
+![micro-task](./assets/micro-task.png)
 
 宏任务和微任务的执行顺序：
 
