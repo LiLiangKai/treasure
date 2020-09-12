@@ -8,9 +8,11 @@ class LinkNode {
 /** 单向链表容器 */
 class LinkList {
   head // 链表头结点
+  nodeCount // 链表结点数
 
   constructor() {
     this.head = new LinkNode()
+    this.nodeCount = 0
   }
 
   /**
@@ -62,6 +64,7 @@ class LinkList {
     const newNode = new LinkNode(elem)
     newNode.next = this.head.next
     this.head.next = newNode
+    this.nodeCount++
   }
 
   /**
@@ -78,6 +81,7 @@ class LinkList {
     }
     newNode.next = cur
     prev.next = newNode
+    this.nodeCount++
   }
 
   /**
@@ -91,6 +95,7 @@ class LinkList {
     const newNode = new LinkNode( newElem )
     newNode.next = elemNode.next
     elemNode.next = newNode
+    this.nodeCount++
   }
 
   /**
@@ -101,6 +106,7 @@ class LinkList {
     const prevNode = this.findPrev(elem)
     if(prevNode === -1) return 
     prevNode.next = prevNode.next.next
+    this.nodeCount--
   }
 
   /**
@@ -114,6 +120,7 @@ class LinkList {
       if(cur.elem === elem) {
         prev.next = cur.next
         cur = prev.next
+        this.nodeCount--
       } else {
         prev = cur
         cur = cur.next
@@ -145,7 +152,7 @@ class LinkList {
       elems.push(cur.elem)
       cur = cur.next
     }
-    console.log(elems.join(' -> '))
+    console.log(elems.join(' -> '), ' total node numbes = ', this.nodeCount)
   }
 }
 
