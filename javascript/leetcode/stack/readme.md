@@ -119,4 +119,4 @@ class LinkStack {
 
 使用链式栈时，对元素的入栈，可以使用头插法，即在每次入栈的元素都插在首节点位置，出栈时也是取出首节点即可，避免了遍历链表操作。
 
-- [栈的代码](https://github.com/LiLiangKai/treasure/tree/master/javascript/leetcode/stack/src)
+- [完整代码](https://github.com/LiLiangKai/treasure/tree/master/javascript/leetcode/stack/src)
