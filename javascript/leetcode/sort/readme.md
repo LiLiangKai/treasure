@@ -136,3 +136,62 @@ function insertionSort (array) {
 - 在最坏的情况下，数组被反向排序并且（a [j]> X）始终为真插入始终发生在数组的前端，并且内部循环以O（N）运行。
 
 因此，最佳情况时间是O(N × 1) = O(N) ，最坏情况时间是O(N × N) = O(N^2).
+
+## 归并排序
+
+归并排序采用分治的思想，即将大问题分解为小问题，小问题解决了，大问题自然也解决了。
+
+递归步骤：
+
+1. 将待排序数据分解为两个规模更小的数组（通常以数组长度一半进行分割）
+2. 两个规模更小的数组是否可以继续分割，如果可以，对两个数组分别重复步骤1~2
+3. 逐个遍历两个数组元素，按照要排序的顺序将数组元素依次合并
+
+图解
+
+![归并排序](./assets/mergeSort.png)
+
+递推公式
+
+`mergeSort(array[i, l]) = merge(mergeSort(array[i, m]), mergeSort(array[m+1, l]))`
+
+其中，`i`为数组第一个元素下标，`l`为数组最后一个元素下标，`m`为数组中间元素的下标(通常是 length/2)
+
+
+代码：
+
+```js
+function mergeSort (array = []) {
+  const length = array.length
+  if(length < 2) return array
+  // 分
+  const mid = Math.floor(length / 2)
+  const left = array.slice(0, mid)
+  const right = array.slice(mid)
+  // 并
+  return merge(mergeSort(left), mergeSort(right))
+} 
+
+/** 合并数组 */
+function merge (left = [], right = []) {
+  const tmp = []
+
+  while(left.length && right.length) {
+    if(left[0] <= right[0]) {
+      tmp.push(left.shift())
+    } else {
+      tmp.push(right.shift())
+    }
+  }
+
+  while(left.length) {
+    tmp.push(left.shift())
+  }
+  while(right.length) {
+    tmp.push(right.shift())
+  }
+
+  return tmp
+}
+```
+

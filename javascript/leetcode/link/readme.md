@@ -167,9 +167,17 @@ prevNode.next = curNode.next
 
 ### 单向循环链表
 
-单向循环链表的数据同单向链表一样，只是链表的尾节点的next指向链表首节点。
+单向循环链表的数据结构同单向链表一样，只是链表的尾节点的next指向链表首节点。
 
+循环链表的好处是通过任意节点都能遍历整个链表。
 
+![circle single link](./assets/circle-single-link.png)
+
+### 双向循环链表
+
+双向循环链表的数据结构同双向链表一样，只是链表的尾节点的next指向链表首节点，链表首节点的prev指向尾结点。
+
+![circle doubly link](./assets/circle-doubly-link.png)
 
 相关链接
 

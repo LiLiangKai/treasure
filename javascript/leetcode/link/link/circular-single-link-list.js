@@ -8,11 +8,13 @@ class LinkNode {
 /** 单向链表容器 */
 class LinkList {
   head // 链表头结点
+  end // 尾结点
   nodeCount // 链表结点数
 
   constructor () {
     this.head = new LinkNode('head')
-    this.head.next = this.head
+    this.head.next = null
+    this.end = null
     this.nodeCount = 0
   }
 
@@ -49,11 +51,11 @@ class LinkList {
   findPrev ( elem ) {
     let cur = this.head.next
     let prev = this.head
-    while(cur && cur !== this.head && cur.elem !== elem) {
+    while(cur && cur !== this.head.next && cur.elem !== elem) {
       prev = cur
       cur = cur.next
     }
-    return (prev === this.head || prev.next === this.head)? -1 : prev
+    return (prev === this.head.next || prev.next === this.head)? -1 : prev
   }
 
   /**
@@ -62,8 +64,12 @@ class LinkList {
    */
   insertBefore ( elem ) {
     const newNode = new LinkNode(elem)
-    newNode.next =  this.head.next
+    if(!this.head.next) {
+      this.end = newNode
+    }
+    newNode.next = this.head.next
     this.head.next = newNode
+    this.end.next = newNode
     this.nodeCount++
   }
 
@@ -79,7 +85,7 @@ class LinkList {
       prev = cur
       cur = cur.next
     }
-    newNode.next = this.head
+    newNode.next = this.head.next
     prev.next = newNode
     this.nodeCount++
   }
@@ -103,7 +109,7 @@ class LinkList {
    * @param {*} elem 
    */
   remove ( elem ) {
-    const 
+    // const 
   }
 
   /**
@@ -122,12 +128,14 @@ class LinkList {
   /** 打印链表 */
   print () {
     const elems = [ 'head' ]
-    let cur = this.head.next
-    while ( cur && cur.elem ) {
-      elems.push( cur.elem )
-      if(cur === this.head) {
-        break
-      }
+    const firstNode = this.head.next
+    let cur = firstNode.next
+    if ( firstNode) {
+      elems.push( firstNode.elem)
+    }
+    while ( cur && cur !== firstNode) {
+      elems.push(cur.elem)
+      console.log(cur.elem)
       cur = cur.next
     }
     console.log( elems.join( ' -> ' ), ' total node numbes = ', this.nodeCount )
@@ -140,29 +148,29 @@ linkList.insertBefore( 2 )
 linkList.insertBefore( 1 ) 
 linkList.print()
 
-linkList.insertAfter( 5 )
-linkList.insertAfter( 6 )
-linkList.insertAfter( 7 )
-linkList.print()
+// linkList.insertAfter( 5 )
+// linkList.insertAfter( 6 )
+// linkList.insertAfter( 7 )
+// linkList.print()
 
-console.log( linkList.find( 1 ) )
-console.log( linkList.find( 7 ) )
-console.log( linkList.find( 5 ) )
-console.log( linkList.find( 9 ) )
-linkList.print()
+// console.log( linkList.find( 1 ) )
+// console.log( linkList.find( 7 ) )
+// console.log( linkList.find( 5 ) )
+// console.log( linkList.find( 9 ) )
+// linkList.print()
 
-console.log( linkList.findByIndex( 0 ) )
-console.log( linkList.findByIndex( 1 ) )
-console.log( linkList.findByIndex( 5 ) )
-console.log( linkList.findByIndex( 6 ) )
+// console.log( linkList.findByIndex( 0 ) )
+// console.log( linkList.findByIndex( 1 ) )
+// console.log( linkList.findByIndex( 5 ) )
+// console.log( linkList.findByIndex( 6 ) )
 
-linkList.insert( 1, 4 )
-linkList.insert( 7, 9 )
-linkList.insert( 4, 8 )
-linkList.insert( 0, 8 )
-linkList.print()
+// linkList.insert( 1, 4 )
+// linkList.insert( 7, 9 )
+// linkList.insert( 4, 8 )
+// linkList.insert( 0, 8 )
+// linkList.print()
 
-console.log( linkList.findPrev( 9 ) )
-console.log( linkList.findPrev( 4 ) )
-console.log( linkList.findPrev( 1 ) )
-console.log( linkList.findPrev( 10 ) )
+// console.log( linkList.findPrev( 9 ) )
+// console.log( linkList.findPrev( 4 ) )
+// console.log( linkList.findPrev( 1 ) )
+// console.log( linkList.findPrev( 10 ) )

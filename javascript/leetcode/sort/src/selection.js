@@ -1,5 +1,7 @@
 /** 选择排序 */
 
+module.exports = selectionSort
+
 function selectionSort (array) {
   for(let i=0; i<array.length-1; i++) {
     let n = i
@@ -15,4 +17,4 @@ function selectionSort (array) {
   return array
 }
 
-console.log( selectionSort( [ 29, 10, 14, 37, 10 ] ) )
+// console.log( selectionSort( [ 29, 10, 14, 37, 10 ] ) )
