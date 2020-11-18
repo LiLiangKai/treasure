@@ -35,8 +35,26 @@ var twoSum = function ( nums, target ) {
 };
 
 console.time('start')
-console.log( twoSum( [ -3, 4, 3, 90 ], 0 ) )
+console.log( twoSum( [ -3, 4, 3, 90, 3, 5,10, -42, -6, 6, 12 ], 13 ) )
 console.timeEnd('start')
+
+var twoSum_2 = function (array, target) {
+  const map = {}
+  for(let i=0; i<array.length; i++) {
+    const val = array[i]
+    const d = target - val
+    if(map[d] !== undefined && map[d] !== null) {
+      return [map[d], i]
+    } else {
+      map[val] = i
+    }
+  }
+  return []
+}
+
+console.time( 'start' )
+console.log( twoSum_2( [ -3, 4, 3, 90, 3, 5, 10, -42, -6, 6, 12 ], 13 ) )
+console.timeEnd( 'start' )
 
 /*
 

@@ -115,3 +115,18 @@ function bubbleSort6(array = []) {
 }
 
 // console.log( bubbleSort6( [ 10, 14, 10, 89, 29, 37 ] ) )
+
+function bubbleSort7(array = []) {
+  const length = array.length
+  for(let i=0; i<length; i++) {
+    let isBubble = false
+    for(let j=0; j<length-1-i; j++) {
+      if(array[j] > array[j+1]) {
+        [array[j], array[j+1]] = [array[j+1], array[j]]
+        isBubble = true
+      }
+    }
+    if(!isBubble) break
+  }
+  return array
+}

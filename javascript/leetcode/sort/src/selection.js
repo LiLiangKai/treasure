@@ -18,3 +18,17 @@ function selectionSort (array) {
 }
 
 // console.log( selectionSort( [ 29, 10, 14, 37, 10 ] ) )
+
+function selectSort (array = []) {
+  const length = array.length
+  for(let i=0; i<length-1; i++) {
+    let n = i
+    for(let j=i+1; j<length; j++) {
+      if(array[j] < array[n]) {
+        n = j
+      }
+    }
+    [array[i], array[n]] = [array[n], array[i]]
+  }
+  return array
+}

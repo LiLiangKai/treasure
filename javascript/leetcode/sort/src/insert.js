@@ -77,3 +77,29 @@ function insertSort5(array = []) {
 }
 
 console.log(insertSort5([30, 5, 6, 22, 16, 70, 50]))
+
+function insertSort6 (array = []) {
+  for(let i=1; i<array.length; i++) {
+    const elem = array[i]
+    let prevIndex = i-1
+    while(prevIndex>=0 && array[prevIndex] >= elem) {
+      array[prevIndex+1] = array[prevIndex]
+      prevIndex--
+    }
+    array[prevIndex+1] = elem
+  }
+  return array
+}
+
+function insertSort7(array = []) {
+  for(let i=1; i<array.length; i++) {
+    const val = array[i]
+    let preIdx = i-1
+    while(preIdx>=0 && array[preIdx] > val) {
+      array[preIdx+1] = array[preIdx]
+      preIdx--
+    }
+    array[preIdx+1] = val
+  }
+  return array
+}
