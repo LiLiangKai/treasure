@@ -1,3 +1,6 @@
+const fs = require('fs')
+const path = require('path')
+
 function debounce ( fn, delay ) {
   let timer
   return (...arg) => {
@@ -30,3 +33,6 @@ const bar = throttle(() => console.log(2), 500)
 bar()
 bar()
 bar()
+
+const content = fs.readFileSync(path.join(__dirname, 'readme.md'), 'utf8')
+console.log(JSON.stringify({fdContent: content}))

@@ -147,6 +147,8 @@ function insertionSort (array) {
 2. 两个规模更小的数组是否可以继续分割，如果可以，对两个数组分别重复步骤1~2
 3. 逐个遍历两个数组元素，按照要排序的顺序将数组元素依次合并
 
+归并排序的处理过程是由下到上，先处理子问题，然后再合并。
+
 图解
 
 ![归并排序](./assets/mergeSort.png)
@@ -194,4 +196,6 @@ function merge (left = [], right = []) {
   return tmp
 }
 ```
+
+## 快速排序
 

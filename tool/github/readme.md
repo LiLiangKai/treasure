@@ -40,3 +40,8 @@ Node.js用于优化SVG文件的工具
 
 Node.js的require扩展，便于对TypeScript操作。
 
+#### [chokidar](https://github.com/paulmillr/chokidar)
+
+> A neat wrapper around Node.js fs.watch / fs.watchFile / FSEvents.
+
+Node.js文件监听工具

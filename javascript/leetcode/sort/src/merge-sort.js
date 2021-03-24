@@ -35,5 +35,5 @@ function merge (left = [], right = []) {
   return tmp
 }
 
-console.log(mergeSort([10, 2, 6, 3, 59, 44, 16, 20, 33, 4, 8, 19, 10, 28]))
+// console.log(mergeSort([10, 2, 6, 3, 59, 44, 16, 20, 33, 4, 8, 19, 10, 28]))
 
