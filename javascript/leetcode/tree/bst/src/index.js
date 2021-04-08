@@ -132,7 +132,7 @@ class BST {
   }
 
   /** 前驱节点 */
-  precursor (key) {
+  predecessor (key) {
     let node = this.search( key )
     if(!node) return node
     if(node.left) {
