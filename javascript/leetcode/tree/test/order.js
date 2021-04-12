@@ -1,7 +1,7 @@
 const { preorder, inorder, postorder } = require('../src/order')
 
 function TreeNode ( val ) {
-  this.elem = val
+  this.val = val
   this.left = null
   this.right = null
 }
@@ -16,16 +16,16 @@ function TreeNode ( val ) {
 
 function main () {
   const tree = {
-    elem: 5,
+    val: 5,
     left: {
-      elem: 3,
-      left: { elem: 1 },
-      right: { elem: 4 }
+      val: 3,
+      left: { val: 1 },
+      right: { val: 4 }
     },
     right: {
-      elem: 7,
-      left: { elem: 6 },
-      right: { elem: 8 }
+      val: 7,
+      left: { val: 6 },
+      right: { val: 8 }
     }
   }
   preorder(tree) // 5 3 1 4 7 6 8

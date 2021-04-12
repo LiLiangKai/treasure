@@ -1,6 +1,6 @@
 > 2021/4/6 by Hiya
 
-# BST 二叉搜索树
+# 二叉搜索树 (Binary Search Tree)
 
 二叉搜索树是相较于顺序查找数组或链表的一种查找效率更为高效的数据结构。
 
@@ -135,6 +135,7 @@ class BST {
 图1的二叉搜索树，结点6的前驱结点是5，结点5满足离6结点最近且其右孩子结点7是结点5的祖先结点。
 
 ![前驱结点](./assets/tree_predecessor.png)
+<p style="text-align:center;color:#999;font-size:12px">图2</p>
 
 代码实现：
 
@@ -169,6 +170,7 @@ class BST {
 图1的二叉搜索树，结点4的后继结点是5，结点5满足离4结点最近且其左孩子结点3是结点4的祖先结点。
 
 ![后继结点](./assets/tree_successor.png)
+<p style="text-align:center;color:#999;font-size:12px">图3</p>
 
 代码实现：
 
@@ -201,6 +203,7 @@ class BST {
 - 二叉树不为空，从根结点出发，对比插入结点的`key`值得大小。插入结点的`key`小于根结点，则往根结点的左子树向下对比，直到找到合适的插入位置；插入结点的`key`大于根结点，则往根结点的右子树向下对比，直到找到合适的插入位置
 
 ![插入结点](./assets/tree_insert.png)
+<p style="text-align:center;color:#999;font-size:12px">图4</p>
 
 代码实现：
 
@@ -258,3 +261,69 @@ class BST {
 ```
 
 ## 删除结点
+
+二叉搜索树结点的删除操作相交于插入操作，会复杂一些。对于要删除的结点，记为`node`，`node`结点存在以下3种情况：
+
+- `node`左右子树都不存在
+- `node`左右子树都存在
+- `node`存在左子树或右子树
+
+对于二叉搜索树结点的删除，这里不使用将结点从树中删除的操作，而是用树中某个结点替换要删除的结点，既不破坏二叉搜索树的性质，同时达到删除的目的。
+
+![删除结点](./assets/tree_delete.png)
+<p style="text-align:center;color:#999;font-size:12px">图5</p>
+
+根据图5分析：
+
+- (a)删除的阶段是根结点，将根结点置为`null`即可
+- (b)
+- (c)
+- (d)
+
+```js
+class BST {
+  /**
+   * 结点替换
+   * @param {TreeNode} oldNode 
+   * @param {TreeNode} newOld 
+   */
+  _transplant (oldNode, newOld) {
+    if(oldNode.p === null) {
+      this.root = newOld
+    } else if(oldNode.p.left === oldNode) {
+      oldNode.p.left = newOld
+    } else {
+      oldNode.p.right = newOld
+    }
+    if(newOld !== null) {
+      newOld.p = oldNode.p
+    }
+  }
+
+  delete (key) {
+    const node = this.search(key)
+    if(!node) return
+    if(!node.left) {
+      // 如果要删除的结点的左孩子为空，则用右孩子替换待删除的结点
+      this._transplant(node, node.right)
+    } else if(!node.right) {
+      // 如果要删除的结点的右孩子为空，则用左孩子替换待删除的结点
+      this._transplant(node, node.left)
+    } else {
+      // 获取删除的结点的后继结点
+      const successorNode = this.min(node.right)
+      if(successorNode.p !== node) {
+        // 后继结点的父结点不是待删除的阶段
+        // 将后继节点与其右孩子进行替换
+        this._transplant(successorNode, successorNode.right)
+        successorNode.right = node.right
+        successorNode.right.p = successorNode
+      }
+      // 用后继节点替换待删除节点
+      this._transplant(node, successorNode)
+      successorNode.left = node.left
+      successorNode.left.p = successorNode
+    }
+  }
+}
+```

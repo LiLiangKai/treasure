@@ -1,5 +1,5 @@
 function TreeNode ( val ) {
-  this.elem = val
+  this.val = val
   this.left = null
   this.right = null
 }
@@ -13,7 +13,43 @@ function postorder (treeNode) {
   if(!treeNode) return
   postorder(treeNode.left)
   postorder(treeNode.right)
-  console.log('postorder current node: ', treeNode.elem)
+  console.log('postorder current node: ', treeNode.val)
+}
+
+function postorderIterate ( root ) {
+  const result = []
+  if ( !root ) return result
+  const stack = [ root ]
+  while ( stack.length ) {
+    const node = stack.pop()
+    result.push( node.val )
+    node.left && stack.push( node.left )
+    node.right && stack.push( node.right )
+  }
+  result.reverse()
+  return result
 }
 
 module.exports = postorder
+
+const tree = {
+  val: 'A',
+  left: {
+    val: 'B',
+    left: { val: 'D' },
+    right: {
+      val: 'E',
+      left: {
+        val: 'G'
+      },
+      right: {
+        val: 'H'
+      }
+    }
+  },
+  right: {
+    val: 'C',
+    right: { val: 'F' }
+  }
+}
+console.log(postorderIterate(tree))
