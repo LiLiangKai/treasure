@@ -95,7 +95,7 @@ function resolutionProcedure (promise, x, resolve, reject) {
   }
 }
 
-_Promise.prototype.then = (onFulfilled, onRejected) => {
+_Promise.prototype.then = function (onFulfilled, onRejected) {
   const _this = this
   let promise2
   onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : v => v
@@ -155,7 +155,7 @@ _Promise.prototype.then = (onFulfilled, onRejected) => {
   }
 }
 
-_Promise.prototype.catch = (onRejected) => {
+_Promise.prototype.catch = function(onRejected) {
   const _this = this
   let promise2
   onRejected = typeof onRejected === 'function' ? onRejected : v => { throw v }
@@ -183,13 +183,28 @@ _Promise.all = () => {}
 
 _Promise.race = () => {}
 
-const p1 = new _Promise((resolve) => {
-  setTimeout(() => {
-    console.log('waiting 300ms')
-    resolve(1)
-  }, 300)
-}).then(v => {
-  console.log('p1 value: ', v)
-})
+// const p1 = new _Promise((resolve) => {
+//   console.log('waiting 300ms')
+//     resolve(1)
+// }).then(v => {
+//   console.log('p1 value: ', v)
+// })
 
-console.log(p1)
+// console.log(p1)
+
+new Promise((resolve) => {
+  setTimeout(() => {
+    resolve(1)
+    resolve(2)
+  }, 100)
+}).then((res) => {
+  console.log('result1: ', res)
+  return Promise.resolve(res+1)
+}).then(res => {
+  console.log('result2: ', res)
+  return Promise.resolve(res+1)
+}).then(res => {
+  console.log('result3: ', res)
+}).then(res => {
+  console.log('result4: ', res)
+})

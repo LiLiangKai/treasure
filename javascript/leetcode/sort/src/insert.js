@@ -104,14 +104,14 @@ function insertSort7(array = []) {
   return array
 }
 
-function insertSort8 (array = []) {
+function insert (array) {
   for(let i=1; i<array.length; i++) {
     const val = array[i]
-    let prevIndex = i-1
-    while(prevIndex >= 0 && array[prevIndex] > val) {
-      array[prevIndex + 1] = array[prevIndex--]
+    let prevIdx = i-1
+    while(prevIdx >= 0 && array[prevIdx] > val) {
+      array[prevIdx+1] = array[prevIdx--]
     }
-    array[prevIndex] = val
+    array[prevIdx+1] = val
   }
   return array
 }

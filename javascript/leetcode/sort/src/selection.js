@@ -32,3 +32,31 @@ function selectSort (array = []) {
   }
   return array
 }
+
+function select (array) {
+  const length = array.length
+  for(let i=0; i<length-1; i++) {
+    let cur = i
+    for(let j=i+1; j<length; j++) {
+      if(array[j] < array[cur]) {
+        cur = j
+      }
+    }
+    [array[i], array[cur]] = [array[cur], array[i]]
+  }
+  return array
+}
+
+function select (array) {
+  const length = array.length
+  for(let i=0; i<length-1; i++) {
+    let cur = i
+    for(let j=i+1; j<length; j++) {
+      if(array[j] < array[cur]) {
+        cur = j
+      }
+    }
+    [array[i], array[cur]] = [array[cur], array[i]]
+  }
+  return array
+}

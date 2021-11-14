@@ -34,6 +34,24 @@ function inorderIterate (root) {
   return result
 }
 
+function inorderIterate (root) {
+  const result = []
+  if(!root) return result
+  const stack = []
+  let node = root
+  while(node || stack.length) {
+    if(node) {
+      stack.push(node)
+      node = node.left
+    } else {
+      node = stack.pop()
+      result.push(node.val)
+      node = node.right
+    }
+  }
+  return result
+}
+
 module.exports = inorder
 
 const tree = { 

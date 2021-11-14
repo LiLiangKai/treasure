@@ -195,6 +195,17 @@ function levelOrder (root) {
 }
 ```
 
+## 二叉树操作
+
+### 求树的最大深度
+
+```js
+function treeDeep (root) {
+  if(!root) return 0
+  return Math.max(treeDeep(root.left), treeDeep(root.right)) + 1
+}
+```
+
 ## 二叉树的类型
 
 ### 满二叉树

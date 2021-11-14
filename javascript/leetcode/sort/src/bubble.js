@@ -131,17 +131,17 @@ function bubbleSort7(array = []) {
   return array
 }
 
-function bubbleSort8 (array) {
-  for(let i=0; i<array.length-1; i++) {
-    let isBubble = false
-    for(let j=0; j<array.length-1-i; i++) {
+function bubble (array) {
+  const length = array.length
+  for(let i=0; i<length-1; i++) {
+    for(let j=0; j<length-1-i; j++) {
       if(array[j] > array[j+1]) {
         const tmp = array[j+1]
         array[j+1] = array[j]
         array[j] = tmp
       }
     }
-    if(!isBubble) break
   }
   return array
 }
+

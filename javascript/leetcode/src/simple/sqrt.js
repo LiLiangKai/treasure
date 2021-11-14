@@ -69,3 +69,11 @@ console.log(mySqrt(8))
 16 => 
 15 => 
  */
+
+function change () {
+  const now = Date.now()
+  document.body.style.backgroundColor = 'red'
+  while((Date.now() - now) <= 2000) {
+    document.body.style.backgroundColor = 'blue'
+  }
+}

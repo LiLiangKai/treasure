@@ -8,6 +8,19 @@
 </head>
 <body>
   <div id="app"></div>
-  <script src="./react4.js"></script>
+  <script src="./react.js"></script>
+
+  <script>
+    const App = meact.createElement(
+      'div',
+      {
+        class: 'container'
+      },
+      meact.createElement('a', null, 'Hello'),
+      meact.createElement( 'span', null, 'World' )
+    )
+    console.log(App)
+    meact.render(App, document.getElementById('app'))
+  </script>
 </body>
 </html>

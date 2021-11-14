@@ -15,6 +15,22 @@ function levelOrder (root) {
   return result
 }
 
+function levelOrder (root) {
+  const result = []
+  if(!root) return result
+  const queue = [root]
+  while(queue.length) {
+    const size = queue.length
+    for(let i=0; i<size; i++) {
+      const node = queue.shift()
+      result.push(node.val)
+      node.left && queue.push(node.left)
+      node.right && queue.push(node.right)
+    }
+  }
+  return result
+}
+
 const tree = {
   val: 'A',
   left: {
