@@ -11,16 +11,21 @@
   <script src="./react.js"></script>
 
   <script>
-    const App = meact.createElement(
-      'div',
-      {
-        class: 'container'
-      },
-      meact.createElement('a', null, 'Hello'),
-      meact.createElement( 'span', null, 'World' )
-    )
-    console.log(App)
-    meact.render(App, document.getElementById('app'))
+    const App = function () {
+      const [count, setCount] = meact.useState(0)
+      return meact.createElement(
+        'div',
+        {
+          class: 'container',
+          onclick: (e) => {
+            setCount(count+1)
+          }
+        },
+        meact.createElement( 'span', null, 'Count' ),
+        count > 0 ? meact.createElement( 'span', null, count ) : null,
+      )
+    }
+    meact.render(meact.createElement(App), document.getElementById('app'))
   </script>
 </body>
 </html>

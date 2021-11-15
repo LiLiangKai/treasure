@@ -502,7 +502,7 @@ function updateDom (dom, prevProps, nextProps) {
       .filter(isEvent)
       .filter(prop => !(prop in (nextProps||{})) || isNew(prevProps, nextProps||{})(prop))
       .map(prop => {
-        const eventType = props.toLowerCase().substring( 2 )
+        const eventType = prop.toLowerCase().substring( 2 )
         dom.removeEventListener( eventType, prevProps[ prop ] )
       })
 
@@ -528,7 +528,7 @@ function updateDom (dom, prevProps, nextProps) {
       .filter(isEvent)
       .filter(isNew(prevProps || {}, nextProps))
       .map(prop => {
-        const eventType = props.toLowerCase().substring( 2 )
+        const eventType = prop.toLowerCase().substring( 2 )
         dom.addEventListener(eventType, nextProps[prop])
       })
   }
@@ -554,11 +554,223 @@ function createDom (fiber) {
 }
 ```
 
+使用`meact`
+
+```js
+const App = meact.createElement(
+  'div',
+  {
+    class: 'container'
+  },
+  meact.createElement('a', null, 'Hello'),
+  meact.createElement( 'span', null, 'World' )
+)
+meact.render(App, document.getElementById('app'))
+```
+
 ## Function Component
 
+现在想改变以上用法为：
+
+```js
+const App = function () {
+  return meact.createElement(
+    'div',
+    {
+      class: 'container'
+    },
+    meact.createElement( 'a', null, 'Hello' ),
+    meact.createElement( 'span', null, 'World' )
+  )
+}
+meact.render(meact.createElement(App), document.getElementById('app'))
+```
+
+接下来的内容将会实现`meact`对函数式组件的支持。
+
+函数式组件与原来的组件有两方面不同：
+
+- 函数式组件的`type`是Function，而且没有对应的真实DOM节点
+- 函数式组件的`children`只有在执行这个函数时才能生成，不能直接从`props`中获取
+
+现在将组件分为两种类型：
+
+- `HostComponent` - 原生组件，即使用原生的HTML标签创建的组件
+- `FunctionComponent` - 通过函数方式创建的组件
+
+由于需要支持函数式组件，首先要修改 `performUnitOfWork` 方法：
+
+```js
+function performUnitOfWork (unitOfWork) {
+  // 根据组件类型做不同处理
+  const isFunction = unitOfWork.type instanceof Function
+  if(isFunction) {
+    updateFunctionComponent(unitOfWork)
+  } else {
+    updateHostComponent(unitOfWork)
+  }
+
+  // 返回下一个工作单元
+  ...
+}
+```
+
+根据`unitOfWork.type instanceof Function` 判断是不是函数式组件，同时新增了两个方法: `updateHostComponent` 和 `updateFunctionComponent`：
+
+- `updateHostComponent` 方法保留原先的处理
+```js
+function updateHostComponent (fiber) {
+  // 将element添加到DOM中
+  if ( !fiber.dom ) {
+    fiber.dom = createDom( fiber )
+  }
+
+  // 创建element的children的fiber节点
+  const children = fiber.props.children
+  reconcileChildren( fiber, children )
+}
+```
+
+- `updateFunctionComponent`
+```js
+/** 更新函数式组件 */
+function updateFunctionComponent (fiber) {
+  const children = [fiber.type(fiber.props)] // children只有在执行函数后才能获取
+  reconcileChildren(fiber, children)
+}
+```
+
+接下来需要修改 `commitWork` 方法，在原先的方法中，通过 `fiber.parent.dom` 获取父级的DOM节点，现在由于多了函数式组件，其父级不一定对应一个真实的DOM节点，需要一直往上查找，直到找到最近的父级DOM节点。删除时也需要注意，删除的应该是带有DOM节点的。
+
+```js
+/** 查找父级为真实DOM节点的parent fiber */
+function findParentDom (fiber) {
+  let parentFiber = fiber.parent
+  while ( parentFiber && !parentFiber.dom) {
+    parentFiber = parentFiber.parent
+  }
+  return parentFiber
+}
+
+function commitWork (fiber) {
+  if(!fiber) return
+  const parentDom = findParentDom(fiber)?.dom
+
+  // 删除
+  if(fiber.effectTag === DETETION) {
+    parentDom && commitDetetion(fiber, parentDom)
+    return
+  }
+
+  commitWork(fiber.child)
+
+  if(fiber.effectTag === PLACEMENT && fiber.dom) { // 新增
+    parentDom && parentDom.appendChild(fiber.dom) 
+  } else if(fiber.effectTag === UPDATE && fiber.dom) { // 更新
+    updateDom(
+      fiber.dom,
+      fiber.alternate.props,
+      fiber.props
+    )
+  }
+
+  commitWork(fiber.sibling)
+}
+
+function commitDetetion (fiber, parentDom) {
+  if(fiber.dom) {
+    parentDom.removeChildren( fiber.dom )
+  } else {
+    commitDetetion(fiber.child, parentDom)
+  }
+}
+```
 
 ## Hooks
 
+在本节内容中，将实现属于 `meact` 的`useState`，增强函数式组件的能力。
 
+期望最终的使用方式：
 
-## 完整代码
+```js
+const App = function () {
+  const [count, setCount] = meact.useState(0)
+  return meact.createElement(
+    'div',
+    {
+      class: 'container',
+      onclick: (e) => {
+        setCount(count+1)
+      }
+    },
+    meact.createElement( 'span', null, 'Count' ),
+    meact.createElement( 'span', null, count ),
+  )
+}
+meact.render(meact.createElement(App), document.getElementById('app'))
+```
+
+在实现`useState` 方法前，需要对`updateFunctionComponent` 做一些修改，新增一些全局变量供 `useState` 使用
+
+```js
+let wipFiber = null
+let hookIndex = null
+
+/** 更新函数式组件 */
+function updateFunctionComponent (fiber) {
+  wipFiber = fiber
+  hookIndex = 0
+  wipFiber.hooks = []
+  const children = [fiber.type(fiber.props)]
+  reconcileChildren(fiber, children)
+}
+```
+
+实现`useState` 方法，该方法需要返回`state` 和 `setState`。
+
+- `state` - 记录当前组件内部的一个状态值，初始化值由`useState`的参数指定，后续更新组件时的值从对应fiber上记录的旧的`hook`中获取
+- `setState` - 改变`state`的操作方法，记录下一次更新时的值，以便下一次组件更新用于改变`state`，同时生成新的`rootFiber`，操作类似`render` 方法，用于开启新一轮`wookLoop`
+
+```js
+function useState (initial) {
+  // oldHook 不存在表示初始化，存在表示更新
+  const oldHook = wipFiber?.alternate?.hooks && wipFiber.alternate.hooks[hookIndex]
+  const hook = {
+    state: oldHook ? oldHook.state : initial,
+    queue: []
+  }
+
+  // 更新新的state
+  const actions = oldHook?.queue || []
+  actions.forEach(action => {
+    hook.state = typeof action === 'function' ? action(hook.state) : action
+  })
+
+  const setState = action => {
+    // 记录新状态
+    hook.queue.push(action)
+    // setState的工作类似render方法
+    // 开始构建work in process tree
+    rootFiber = {
+      dom: currentFiber.dom,
+      props: currentFiber.props,
+      alternate: currentFiber
+    }
+    nextUnitOfWork = rootFiber
+    deletions = []
+  }
+
+  wipFiber.hooks.push(hook)
+  hookIndex ++
+  return [ hook.state, setState]
+}
+```
+
+## 总结
+
+到此为止，便完成了 `meact` 的所有功能：
+
+- `createElement` 方法用于创建一个`meact element`
+- `render` 方法开启`fiber tree`的构建，构建完毕后通过`commitRoot` 方法提交构建的`fiber tree` ，完成整个`meact`应用的渲染到DOM上
+- 使用 `requestIdleCallback` 完成`meact`应用的初始化和更新时的任务调度，使用可中断的循环执行任务
+- 支持函数式组件写法，通过 `useState` 方法用于保存组件内部状态
