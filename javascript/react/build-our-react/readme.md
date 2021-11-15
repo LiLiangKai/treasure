@@ -774,3 +774,7 @@ function useState (initial) {
 - `render` 方法开启`fiber tree`的构建，构建完毕后通过`commitRoot` 方法提交构建的`fiber tree` ，完成整个`meact`应用的渲染到DOM上
 - 使用 `requestIdleCallback` 完成`meact`应用的初始化和更新时的任务调度，使用可中断的循环执行任务
 - 支持函数式组件写法，通过 `useState` 方法用于保存组件内部状态
+
+[源码](https://github.com/LiLiangKai/treasure/blob/master/javascript/react/build-our-react/src/react.js)
+
+- 参考：[Build your own React](https://pomb.us/build-your-own-react/)
