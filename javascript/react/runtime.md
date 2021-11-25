@@ -826,8 +826,391 @@ function completeWork(current, workInProgress, renderLanes) {
 
 ## commit阶段
 
+在render阶段处理完所有`fiber`节点之后，将会进入到commit阶段。在commit节点，主要执行类组件的相关生命周期、函数式组件的hook、以及将`fiber`节点对应的DOM元素渲染到页面上等。
+
+现在来看一下是如何进入到commit阶段：
+```js
+function performSyncWorkOnRoot(root) {
+  // ...
+
+  var finishedWork = root.current.alternate;
+  root.finishedWork = finishedWork;
+  root.finishedLanes = lanes;
+  commitRoot(root); 
+
+  // ...
+}
+```
+
+当调用`commitRoot`方法，表示进入到了commit阶段。`commitRoot`方法主要执行`commitRootImpl`方法。
+
+```js
+function commitRootImpl(root, renderPriorityLevel) {
+  do {
+    flushPassiveEffects();
+  } while (rootWithPendingPassiveEffects !== null);
+
+  // ...
+ 
+  // root是fiberRoot，finishedWork是rootFiber
+  var finishedWork = root.finishedWork;
+  var lanes = root.finishedLanes;
+
+  // ...
+
+  // 重置一些全局变量
+  if (root === workInProgressRoot) {
+    workInProgressRoot = null;
+    workInProgress = null;
+    workInProgressRootRenderLanes = NoLanes;
+  }
+
+  // 将effectList赋值给firstEffect
+  var firstEffect;
+  if (finishedWork.flags > PerformedWork) {
+    if (finishedWork.lastEffect !== null) {
+      finishedWork.lastEffect.nextEffect = finishedWork;
+      firstEffect = finishedWork.firstEffect;
+    } else {
+      firstEffect = finishedWork;
+    }
+  } else {
+    firstEffect = finishedWork.firstEffect;
+  }
+
+  if(firstEffect !== null) {
+    // ①  before mutation阶段
+    nextEffect = firstEffect;
+    do {
+      {
+        invokeGuardedCallback(null, commitBeforeMutationEffects, null);
+        // ...
+      }
+    } while (nextEffect !== null);
+
+    // ②  mutation阶段
+    nextEffect = firstEffect;
+    do {
+      {
+        invokeGuardedCallback(null, commitMutationEffects, null, root, renderPriorityLevel);
+      }
+    } while (nextEffect !== null);
+
+    // ③  layout阶段
+    root.current = finishedWork;  // 完成workInProgress fiber tree 切换成current fiber tree
+    nextEffect = firstEffect;
+    do {
+      {
+        invokeGuardedCallback(null, commitLayoutEffects, null, root, lanes);
+      }
+    } while (nextEffect !== null);
+
+    // ...
+  }
+}
+```
+
+以上代码是`commitRootImpl`方法的主要内容，整个commit阶段可分为三个阶段：
+
+- before mutation阶段，进入`commitBeforeMutationEffects`方法
+- mutation阶段，进入`commitMutationEffects`方法
+- layout阶段，进入`commitLayoutEffects`方法
+
+在进入before mutation阶段之前，会有一些准备工作，初始化或重置一些变量。在上个章节有提到，在render阶段时会生成一个`effectList`链表，在commit阶段时，则会将`effectList`赋值给`firstEffect`变量，如代码所示：
+
+```js
+var firstEffect;
+if (finishedWork.flags > PerformedWork) {
+  if (finishedWork.lastEffect !== null) {
+    finishedWork.lastEffect.nextEffect = finishedWork;
+    firstEffect = finishedWork.firstEffect;
+  } else {
+    firstEffect = finishedWork;
+  }
+} else {
+  firstEffect = finishedWork.firstEffect;
+}
+```
+
+需要注意的是，由于`fiber`节点的`effectList`只记录了其发生变化的后代`fiber`节点。如果`rootFiber`本身发生了变化（如首次渲染时），需要将其放到`rootFiber`记录的`effectList`链表的末尾，保证所有变化的`fiber`节点不会遗漏。
+
 ### before mutation阶段
+
+现在来看一下 before mutation阶段主要执行的方法`commitBeforeMutationEffects`:
+
+```js
+function commitBeforeMutationEffects() {
+  while (nextEffect !== null) {
+    var current = nextEffect.alternate;
+
+    // 处理DOM节点渲染/删除后的 autoFocus、blur逻辑
+    if (!shouldFireAfterActiveInstanceBlur && focusedInstanceHandle !== null) {
+      if ((nextEffect.flags & Deletion) !== NoFlags) {
+        if (doesFiberContain(nextEffect, focusedInstanceHandle)) {
+          shouldFireAfterActiveInstanceBlur = true;
+        }
+      } else {
+        if (nextEffect.tag === SuspenseComponent && isSuspenseBoundaryBeingHidden(current, nextEffect) && doesFiberContain(nextEffect, focusedInstanceHandle)) {
+          shouldFireAfterActiveInstanceBlur = true;
+        }
+      }
+    }
+
+    var flags = nextEffect.flags;
+
+    // 执行类组件的 getSnapshotBeforeUpdate 生命周期狗子
+    if ((flags & Snapshot) !== NoFlags) {
+      setCurrentFiber(nextEffect);
+      commitBeforeMutationLifeCycles(current, nextEffect);
+      resetCurrentFiber();
+    }
+
+    // 调度函数式组件的useEffect
+    if ((flags & Passive) !== NoFlags) {
+      if (!rootDoesHavePassiveEffects) {
+        rootDoesHavePassiveEffects = true;
+        scheduleCallback(NormalPriority$1, function () {
+          flushPassiveEffects();
+          return null;
+        });
+      }
+    }
+
+    nextEffect = nextEffect.nextEffect;
+  }
+}
+```
+
+`commitBeforeMutationEffects`方法主要做三件事：
+
+- 处理DOM节点渲染/删除后的 `autoFocus`、`blur`逻辑
+- 执行类组件的 `getSnapshotBeforeUpdate` 生命周期狗子
+- 调度函数式组件的`useEffect`
 
 ### mutation阶段
 
+接下来进入到了mutation阶段，看一下`commitMutationEffects`方法：
+
+```js
+function commitMutationEffects(root, renderPriorityLevel) {
+  while (nextEffect !== null) {
+    setCurrentFiber(nextEffect);
+    var flags = nextEffect.flags;
+
+    // 根据 ContentReset flags重置文字节点
+    if (flags & ContentReset) {
+      commitResetTextContent(nextEffect);
+    }
+
+    // 更新ref
+    if (flags & Ref) {
+      var current = nextEffect.alternate;
+      if (current !== null) {
+        commitDetachRef(current);
+      }
+    }
+
+    var primaryFlags = flags & (Placement | Update | Deletion | Hydrating);
+
+    switch (primaryFlags) {
+      case Placement: // 插入DOM
+          commitPlacement(nextEffect); 
+          nextEffect.flags &= ~Placement;
+          break;
+      case PlacementAndUpdate: // 插入并更新DOM
+          commitPlacement(nextEffect); 
+          nextEffect.flags &= ~Placement;
+          var _current = nextEffect.alternate;
+          commitWork(_current, nextEffect);
+          break;
+      case Update:   // 更新DOM
+        var _current3 = nextEffect.alternate;
+          commitWork(_current3, nextEffect);
+          break;
+      case Deletion: // 删除DOM
+          commitDeletion(root, nextEffect);
+          break;
+      // ...
+    }
+    resetCurrentFiber();
+    nextEffect = nextEffect.nextEffect;
+  }
+}
+```
+
+mutation阶段是操作真实DOM元素的阶段，在该阶段，主要做一下事情：
+
+- 根据 ContentReset flags重置文字节点
+- 更新ref（解绑）
+- 根据flags对DOM元素执行不同操作（`Placement|Update|Deletion|...`）
+
+#### Placement - 插入DOM元素
+
+对于`flags`为`Placement`，调用`commitPlacement`方法处理。
+
+```js
+function commitPlacement(finishedWork) {
+  // 获取父级DOM元素
+  var parentFiber = getHostParentFiber(finishedWork);
+  var parentStateNode = parentFiber.stateNode;
+
+  // ...
+
+  // 获取兄弟DOM元素
+  var before = getHostSibling(finishedWork);
+
+  // 根据兄弟DOM元素是否存在决定调用parentNode.insertBefore或parentNode.appendChild执行DOM元素插入操作
+  if (isContainer) {
+    insertOrAppendPlacementNodeIntoContainer(finishedWork, before, parent);
+  } else {
+    insertOrAppendPlacementNode(finishedWork, before, parent);
+  }
+}
+```
+
+`commitPlacement`方法的主要工作内容为：
+
+1. 获取父级DOM元素。
+2. 获取兄弟DOM元素。
+3. 根据兄弟DOM元素是否存在决定调用parentNode.insertBefore或parentNode.appendChild执行DOM元素插入操作
+
+需要注意的是，获取兄弟DOM元素是一个耗时，因为`fiber tree` 和 `DOM tree`并不是一一对应关系。
+
+#### Update - 更新DOM元素
+
+对于`flags`为`Update`，调用`commitWork`方法处理。
+
+`commitWork`主要处理`fiber.tag`为`HostComponent`的`fiber`节点，对于`HostComponent`，会调用`commitUpdate`方法：
+
+```js
+function commitUpdate(domElement, updatePayload, type, oldProps, newProps, internalInstanceHandle) {
+  // 更新fiber节点的属性
+  updateFiberProps(domElement, newProps); 
+  // 更新DOM元素的属性
+  updateProperties(domElement, updatePayload, type, oldProps, newProps);
+}
+```
+
+`commitUpdate`会将`fiber`节点上记录的`updateQueue`中的新状态更新到页面上。
+
+#### Deletion - 删除DOM元素
+
+对于`flags`为`Deletion`，调用`commitDeletion`方法处理。
+
+```js
+function commitDeletion(finishedRoot, current, renderPriorityLevel) {
+  unmountHostComponents(finishedRoot, current);
+
+  var alternate = current.alternate;
+  detachFiberMutation(current);
+
+  if (alternate !== null) {
+    detachFiberMutation(alternate);
+  }
+}
+```
+
+`commitPlacement`方法的主要调用`unmountHostComponents`方法，该方法主要做一下工作：
+
+- 递归调用当前`fiber`节点及其后代`fiber`节点中`fiber.tag`为`ClassComponent`的节点的`componentWillUnmount`生命周期钩子
+- 从页面上移除当前`fiber`节点对应的DOM元素
+- 解绑`ref`
+- 调度`useEffect`的销毁函数
+
+
 ### layout阶段
+
+最后是layout阶段，在进入`commitLayoutEffects`方法前，一个比较重要的点是，**完成了双缓存树的切换，即`workInProgress fiber tree` 切换成`current fiber tree`，代码：`root.current = finishedWork`**。
+
+现在来看一下`commitLayoutEffects`方法：
+
+```js
+function commitLayoutEffects(root, committedLanes) {
+  while (nextEffect !== null) {
+    setCurrentFiber(nextEffect);
+    var flags = nextEffect.flags;
+
+    // 执行相关生命周期钩子或hook
+    if (flags & (Update | Callback)) {
+      var current = nextEffect.alternate;
+      commitLifeCycles(root, current, nextEffect);
+    }
+
+    // 赋值ref
+    if (flags & Ref) {
+      commitAttachRef(nextEffect);
+    }
+
+    resetCurrentFiber();
+    nextEffect = nextEffect.nextEffect;
+  }
+}
+```
+
+在layout阶段，主要完成：
+
+- 执行相关生命周期钩子或hook，调用`commitLifeCycles`方法
+```js
+function commitLifeCycles(finishedRoot, current, finishedWork, committedLanes) {
+  switch (finishedWork.tag) {
+    case FunctionComponent:
+    case ForwardRef:
+    case SimpleMemoComponent:
+    case Block:
+      // 执行useLayoutEffect的回调函数
+      commitHookEffectListMount(Layout | HasEffect, finishedWork);
+      // 调度useEffect的销毁函数与回调函数
+      schedulePassiveEffects(finishedWork);
+      return;
+    case ClassComponent:
+      var instance = finishedWork.stateNode;
+      if (finishedWork.flags & Update) {
+        if(current === null) {
+          // ...
+
+          // 执行componentDidMount生命周期钩子
+          instance.componentDidMount()
+        } else {
+          // ...
+
+          // 执行componentDidUpdate生命周期钩子
+          instance.componentDidUpdate(prevProps, prevState, instance.__reactInternalSnapshotBeforeUpdate)
+        }
+      }
+  }
+}
+```
+
+- 为ref赋值，调用`commitAttachRef`方法
+```js
+function commitAttachRef(finishedWork) {
+  var ref = finishedWork.ref;
+
+  if (ref !== null) {
+    var instance = finishedWork.stateNode;
+    var instanceToUse;
+
+    // 获取DOM示例
+    switch (finishedWork.tag) {
+      case HostComponent:
+        instanceToUse = getPublicInstance(instance);
+        break;
+
+      default:
+        instanceToUse = instance;
+    } // Moved outside to ensure DCE works with this flag
+
+    if (typeof ref === 'function') {
+      // 如果ref是函数形式，调用回调函数
+      ref(instanceToUse);
+    } else { 
+      // 如果ref是ref实例形式，赋值ref.current
+      ref.current = instanceToUse;
+    }
+  }
+}
+```
+
+### 小结
+
+![](https://raw.githubusercontent.com/LiLiangKai/resources/main/imagescommit.jpg)
