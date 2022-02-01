@@ -16,10 +16,13 @@ function validPalindrome (str) {
   let left = 0
   let right = length - 1
   while(left < right) {
-    if(str[left++] === str[right--]) continue
+    if(str[left] === str[right]) {
+      left++
+      right--
+      continue
+    }
     else break
   }
-
   if(isPalindrome(left+1, right)) return true
   if(isPalindrome(left, right-1)) return true
 
@@ -35,7 +38,8 @@ function validPalindrome (str) {
   return false
 }
 
-console.log( validPalindrome( 'abc' ) )
-console.log( validPalindrome( 'aba' ) )
-console.log( validPalindrome( 'abacwd' ) )
-console.log( validPalindrome( '124231' ) )
+
+// console.log( validPalindrome2( 'abc' ) ) // false
+// console.log( validPalindrome2( 'aba' ) ) // true
+// console.log( validPalindrome2( 'abacwd' ) ) // false
+console.log( validPalindrome2( "aguokepatgbnvfqmgmlcupuufxoohdfpgjdmysgvhmvffcnqxjjxqncffvmhvgsymdjgpfdhooxfuupuculmgmqfvnbgtapekouga" ) ) // true
