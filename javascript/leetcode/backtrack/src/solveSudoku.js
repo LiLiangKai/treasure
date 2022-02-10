@@ -28,42 +28,42 @@
  * @return {void} Do not return anything, modify board in-place instead.
  */
 var solveSudoku = function ( board ) {
-  backtrack(board, 0)
+  const length = board.length
+
+  function backtrack (row=0) {
+    
+  }
+
+  backtrack()
+  console.log(board)
 };
 
-function backtrack (board, row) {
-  if(row === board.length) return
+function isValid (target, board, row, col) {
+  const length = board.length
+  // 检查同列不同行是否存在相同的数
+  for(let i=0; i<length; i++) {
+    if(board[i][col] !== '.' && board[i][col] === target) return false
+  }
 
-  const cols = board[ row ].length
-  for ( let col=0; col<cols; col++ ) {
-    if(board[row][col] !== '.') continue
-    let n = 1
-    while(n <= 9) {
-      if(!isValid(board, row, col, n)) continue
-      board[row][col] = n
-      backtrack(board, col===cols-1?row+1:row)
-      // board[row][col] = '.'
-      n++
+  // 检查同行不同列是否存在相同的数
+  for(let i=0; i<length; i++) {
+    if(board[row][i] !== '.' && board[row][i] === target) return false
+  }
+
+  // 检查3x3宫格是否存在相同的数
+  const boxs = [[0,2],[3,5],[6,8]]
+  const rowBox = boxs[(row / 3)|0]
+  const colBox = boxs[(col / 3)|0]
+  // console.log(target, row, col, rowBox, colBox)
+  for(let r=rowBox[0]; r<=rowBox[1]; r++) {
+    for(let c=colBox[0]; c<=colBox[1]; c++) {
+      if ( board[ r ][ c ] !== '.' && board[ r ][ c ] === target ) return false
     }
   }
-}
 
-
-function isValid(board, row, col, num) {
-  const n = board.length
-
-  for(let i=0; i<n; i++) {
-    if(board[i][col] === num) return false
-    if(board[row][i] === num) return false
-  }
-
-  const minRowLimit = Math.floor(row/3) * 3 // 0,3,6
-  const maxRowLimit = minRowLimit + 3 // 3,6,9
-  const minColLimit = Math.floor(col/3)
-  const maxColLimit = minColLimit + 3
-  console.log( row, col, minRowLimit, maxRowLimit, minColLimit, maxColLimit)
   return true
 }
+
 
 const board = [
   [ "5", "3", ".", ".", "7", ".", ".", ".", "." ],
@@ -78,4 +78,4 @@ const board = [
 ]
 
 solveSudoku(board)
-console.log(board)
+// console.log(board)

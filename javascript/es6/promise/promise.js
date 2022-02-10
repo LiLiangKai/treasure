@@ -74,14 +74,15 @@ function resolvePromise(promise, x, resolve, reject) {
   }
   // 如果 x 为对象或者函数
   else if (typeof x === 'object' || typeof x === 'function') {
-    // 这个坑是跑测试的时候发现的，如果x是null，应该直接resolve
+    // 如果x是null，直接resolve
     if (x === null) {
       return resolve(x);
     }
 
+    let then
     try {
       // 把 x.then 赋值给 then 
-      var then = x.then;
+      then = x.then;
     } catch (error) {
       // 如果取 x.then 的值时抛出错误 e ，则以 e 为据因拒绝 promise
       return reject(error);
@@ -89,7 +90,7 @@ function resolvePromise(promise, x, resolve, reject) {
 
     // 如果 then 是函数
     if (typeof then === 'function') {
-      var called = false;
+      let called = false;
       // 将 x 作为函数的作用域 this 调用之
       // 传递两个回调函数作为参数，第一个参数叫做 resolvePromise ，第二个参数叫做 rejectPromise
       // 名字重名了，我直接用匿名函数了
@@ -132,7 +133,7 @@ function resolvePromise(promise, x, resolve, reject) {
 MyPromise.prototype.then = function (onFulfilled, onRejected) {
   // 如果onFulfilled不是函数，给一个默认函数，返回value
   // 后面返回新promise的时候也做了onFulfilled的参数检查，这里可以删除，暂时保留是为了跟规范一一对应，看得更直观
-  var realOnFulfilled = onFulfilled;
+  let realOnFulfilled = onFulfilled;
   if (typeof realOnFulfilled !== 'function') {
     realOnFulfilled = function (value) {
       return value;
@@ -141,23 +142,23 @@ MyPromise.prototype.then = function (onFulfilled, onRejected) {
 
   // 如果onRejected不是函数，给一个默认函数，返回reason的Error
   // 后面返回新promise的时候也做了onRejected的参数检查，这里可以删除，暂时保留是为了跟规范一一对应，看得更直观
-  var realOnRejected = onRejected;
+  let realOnRejected = onRejected;
   if (typeof realOnRejected !== 'function') {
     realOnRejected = function (reason) {
       throw reason;
     }
   }
 
-  var that = this;   // 保存一下this
+  const that = this;   // 保存一下this
 
   if (this.status === FULFILLED) {
-    var promise2 = new MyPromise(function (resolve, reject) {
+    const promise2 = new MyPromise(function (resolve, reject) {
       setTimeout(function () {
         try {
           if (typeof onFulfilled !== 'function') {
             resolve(that.value);
           } else {
-            var x = realOnFulfilled(that.value);
+            const x = realOnFulfilled(that.value);
             resolvePromise(promise2, x, resolve, reject);
           }
         } catch (error) {
@@ -170,13 +171,13 @@ MyPromise.prototype.then = function (onFulfilled, onRejected) {
   }
 
   if (this.status === REJECTED) {
-    var promise2 = new MyPromise(function (resolve, reject) {
+    const promise2 = new MyPromise(function (resolve, reject) {
       setTimeout(function () {
         try {
           if (typeof onRejected !== 'function') {
             reject(that.reason);
           } else {
-            var x = realOnRejected(that.reason);
+            const x = realOnRejected(that.reason);
             resolvePromise(promise2, x, resolve, reject);
           }
         } catch (error) {
@@ -190,14 +191,14 @@ MyPromise.prototype.then = function (onFulfilled, onRejected) {
 
   // 如果还是PENDING状态，将回调保存下来
   if (this.status === PENDING) {
-    var promise2 = new MyPromise(function (resolve, reject) {
+    const promise2 = new MyPromise(function (resolve, reject) {
       that.onFulfilledCallbacks.push(function () {
         setTimeout(function () {
           try {
             if (typeof onFulfilled !== 'function') {
               resolve(that.value);
             } else {
-              var x = realOnFulfilled(that.value);
+              const x = realOnFulfilled(that.value);
               resolvePromise(promise2, x, resolve, reject);
             }
           } catch (error) {
@@ -211,7 +212,7 @@ MyPromise.prototype.then = function (onFulfilled, onRejected) {
             if (typeof onRejected !== 'function') {
               reject(that.reason);
             } else {
-              var x = realOnRejected(that.reason);
+              const x = realOnRejected(that.reason);
               resolvePromise(promise2, x, resolve, reject);
             }
           } catch (error) {
