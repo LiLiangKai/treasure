@@ -50,8 +50,18 @@ const root2 = new BinaryTreeNode(8,
   new BinaryTreeNode(2)
 )
 
-console.log( hasSubTree( root1, null ) )
-console.log( hasSubTree( null, root2 ) )
-console.log( hasSubTree( null, null ) )
-console.log( hasSubTree( root1, root2 ) )
-console.log( hasSubTree( root2, root1 ) )
+// console.log( hasSubTree( root1, null ) )
+// console.log( hasSubTree( null, root2 ) )
+// console.log( hasSubTree( null, null ) )
+// console.log( hasSubTree( root1, root2 ) )
+// console.log( hasSubTree( root2, root1 ) )
+
+const root3 = new BinaryTreeNode(1,
+  new BinaryTreeNode(0,
+    new BinaryTreeNode( -4 ),
+    new BinaryTreeNode( 3 )
+  ),
+  new BinaryTreeNode(1)
+)
+const root4 = new BinaryTreeNode(1, new BinaryTreeNode(-4))
+console.log(hasSubTree(root3, root4))
