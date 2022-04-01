@@ -11,8 +11,8 @@
 */
 
 function ListNode(val, next) {
-  this.val = (val===undefined ? 0 : val)
-  this.next = (next===undefined ? null : next)
+  this.val = val
+  this.next = next ?? null
 }
 
 /**
@@ -47,6 +47,64 @@ function ListNode(val, next) {
   return hd.next
 };
 
-const link = new ListNode(1, new ListNode(2, new ListNode(3, new ListNode(4, new ListNode(5)))))
+const link = new ListNode(1, new ListNode(2, new ListNode(3, new ListNode(4, new ListNode(5, new ListNode(6))))))
 
-console.log(reverseBetween(link, 2, 4))
+// console.log(reverseBetween(link, 2, 4))
+
+function reverseList (head, left, right) {
+  if(!head) return head
+  if(right <= left) return head
+  const hd = new ListNode('', head)
+  let prev = hd
+  let start = 1
+  while(prev.next && start < left) {
+    prev = prev.next
+    start++
+  }
+  if(prev) {
+    let cur = prev.next
+    start = left
+    while (cur && cur.next && start < right) {
+      const next = cur.next
+      cur.next = next.next
+      next.next = prev.next
+      prev.next = next
+      start ++
+    }
+  }
+
+  return hd.next
+}
+
+function reverseKGroup (head, k) {
+  if(!head || k === 1) return head
+  const hd = new ListNode('', head)
+  let prev = hd
+  let start = end = hd.next
+  let count = 1
+  while (end && end.next && count < k) {
+    end = end.next
+    count++
+  }
+  if(count < k) return hd.next
+  const other = end.next
+  end.next = null
+  count = 1
+  while(count < k) {
+    const next = start.next
+    start.next = next.next
+    next.next = prev.next
+    prev.next = next
+    count++
+  }
+  start.next = reverseKGroup(other, k)
+  return hd.next
+}
+
+console.log(JSON.stringify(reverseKGroup(link, 1)))
+
+/*
+1 -> 2 -> 3 -> 4 -> 5 -> 6
+
+0 => 1 -> 2  -> 3 -> 4 -> 5 -> 6
+*/

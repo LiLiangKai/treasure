@@ -48,6 +48,34 @@ var numSquares = function ( n ) {
   return dp[n]
 };
 
+/*
+i=1
+  dp[i]=1
+  j = 1 , i-j*j=1-1=0>=0
+  dp[i] = min(1, dp[0]+1) = min(1,1) = 1
+  j=2 , i-j*j=1-4<0
+
+i=2
+  dp[2]=2
+  j=1
+  dp[2] = min(2, dp[1]+1) = min(2,2) = 2
+  j=2 , 2-2*2<0
+ 
+i=3
+  dp[3]=3
+  j=1
+  dp[3]=min(3, dp[2]+1) = 3
+  j=2 , 3-2*2<0
+
+i=4
+  dp[4]=4
+  j=1
+  dp[4]=min(4, dp[3]+1) = 4
+  j=2 , 4-2*2 = 0
+  dp[4]=min(4, dp[0]+1) = 1
+  j=3 , 4-3*3 < 0
+*/
+
 console.log( numSquares( 1 ) )
 console.log( numSquares( 2 ) )
 console.log( numSquares( 3 ) )

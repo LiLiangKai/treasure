@@ -56,8 +56,116 @@ var maxProduct2 = function ( nums ) {
   return result
 };
 
-console.log( maxProduct2( [ 2, 3, -2, 4,-2 ] ) )
-console.log( maxProduct2( [ -2, 0, -4 ] ) )
+// console.log( maxProduct2( [ 2, 3, -2, 4,-2 ] ) )
+// console.log( maxProduct2( [ -2, 0, -4 ] ) )
+
+function getMaxSubArr ( arr ) {
+  const firstVal = arr[ 0 ]
+  let prev = {
+    maxVal: firstVal,
+    maxArray: [ firstVal ],
+    minVal: firstVal,
+    minArray: [ firstVal ]
+  }
+  let resultVal = prev.maxVal
+  let result = prev.maxArray
+
+
+  for ( let i = 1; i < arr.length; i++ ) {
+    let currentObj = {}
+    const current = arr[ i ]
+    const lastMinVal = current * prev.minVal
+    const lastMaxVal = current * prev.maxVal
+
+    const minVal = Math.min( lastMaxVal, lastMinVal, current )
+    const maxVal = Math.max( lastMaxVal, lastMinVal, current )
+
+    currentObj.minVal = minVal
+    if ( minVal === lastMinVal ) {
+      currentObj.minArray = prev.minArray.concat( current )
+    } else if ( minVal === lastMaxVal ) {
+      currentObj.minArray = prev.maxArray.concat( current )
+    } else {
+      currentObj.minArray = [ current ]
+    }
+
+    currentObj.maxVal = maxVal
+    if ( maxVal === lastMinVal ) {
+      currentObj.maxArray = prev.minArray.concat( current )
+    } else if ( maxVal === lastMaxVal ) {
+      currentObj.maxArray = prev.maxArray.concat( current )
+    } else {
+      currentObj.maxArray = [ current ]
+    }
+
+    if ( currentObj.maxVal >= resultVal ) {
+      if ( currentObj.maxVal > resultVal || result.length < currentObj.maxArray.length ) {
+        result = currentObj.maxArray
+      }
+      resultVal = currentObj.maxVal
+    }
+    prev = currentObj
+  }
+  return result
+}
+// console.log( getMaxSubArr( [ 1, 1, 1, 1, 1 ] ) )
+// console.log( getMaxSubArr( [ 1, 2, 3, -1, 4, -5,6 ] ) )
+
+
+function getMaxSubArr2 (arr) {
+  const dp = new Array(arr.length).fill(0).map(() => new Array(arr.length).fill(0))
+  for(let i=0; i<arr.length; i++) {
+    dp[i][i] = arr[i]
+  }
+  let start=end=0
+  let result = arr[0]
+  for(let i=0; i<arr.length-1; i++) {
+    for(let j=i+1; j<arr.length; j++) {
+      dp[i][j] = dp[i][j-1] * arr[j]
+      if(dp[i][j] > result) {
+        result = dp[i][j]
+        start=i
+        end=j
+      }
+    }
+  }
+  return arr.slice(start, end+1)
+}
+
+// console.log( getMaxSubArr2( [ 1, 2, 3, -1, 4, 5 ] ) )
+// console.log( getMaxSubArr2( [ 1, 2, 3, -1, 4, 5, -1 ] ) )
+// console.log( getMaxSubArr2( [ 1, 1, 1, 1, 1, 1 ] ) )
+// console.log( getMaxSubArr2( [ 1, 1, 1, 2, 1, 3 ] ) )
+// console.log( getMaxSubArr2( [ 1, 6, -1, 2, -1, -3 ] ) )
+
+function getMaxSubArr3 (arr) {
+  const dp = new Array(arr.length).fill(0)
+  let start = end = 0
+  let result = arr[ 0 ]
+  for(let i=0; i<arr.length; i++) {
+    dp[i] = arr[i]
+    if ( dp[i] > result ) {
+      result = dp[ i ]
+      start = end = i
+    }
+    for(let j=i+1; j<arr.length; j++) {
+      dp[j] = arr[j] * dp[j-1]
+      if(dp[j] > result) {
+        result = dp[j]
+        start = i
+        end = j
+      }
+    }
+  }
+  return arr.slice(start, end+1)
+}
+
+// console.log( getMaxSubArr3( [ 1, 1, 1, 3, -1, 5 ] ) )
+// console.log( getMaxSubArr3( [ 1, 2, 3, -1, 4, 5 ] ) )
+// console.log( getMaxSubArr3( [ 1, 2, 3, -1, 4, 5, -1 ] ) )
+// console.log( getMaxSubArr3( [ 2,2,2,2,2 ] ) )
+// console.log( getMaxSubArr3( [ 1, 1, 1, 2, 1, 3 ] ) )
+// console.log( getMaxSubArr3( [ 1, 6, -1, 2, 3 ] ) )
 
 /*
     2   3   -2  4
@@ -66,3 +174,39 @@ console.log( maxProduct2( [ -2, 0, -4 ] ) )
 -2 -12 -6   -2
  4 -48 -24  -8  4
 */
+
+
+function minTransferCount (source, target) {
+  let result = Infinity
+  const operates = {
+    '+1': (n) => n+1,
+    '*2': (n) => n<<1
+  }
+
+  function backtrack (source, target, path = []) {
+    if(source[0] === target[0] && source[1] === target[1]) {
+      if(path.length < result) {
+        result = path.length
+      }
+      return
+    }
+    if(source[0] > target[0] || source[1] > target[1]) {
+      return
+    }
+    for(const key in operates) {
+      const originSource = [...source]
+      path.push(key)
+      source = source.map(operates[key])
+      if(source[0] <= target[0] && source[1] <= target[1]) {
+        backtrack(source, target, path)
+      }
+      path.pop()
+      source = originSource
+    }
+  }
+
+  backtrack(source, target)
+  return result === Infinity ? -1 : result
+}
+
+console.log(minTransferCount([1,1], [1,1]))

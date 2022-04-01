@@ -23,7 +23,7 @@ function isPostOrder (order = []) {
     if(order[j] < rootVal) return false
   }
 
-  return isPostOrder(order.slice(i,i)) && isPostOrder(order.slice(i, length-1))
+  return isPostOrder(order.slice(0,i)) && isPostOrder(order.slice(i, length-1))
 }
 
 console.log( isPostOrder( [] ) )
