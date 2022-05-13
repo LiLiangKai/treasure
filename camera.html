@@ -207,6 +207,7 @@
       if (code){
         clearInterval(timer);
         console.log('ondata',code.data);
+        alert("扫码成功，结果是: ", code.data);
       }else {
         console.log('正在扫二维码...');
       }
