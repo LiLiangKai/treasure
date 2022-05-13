@@ -158,12 +158,12 @@
       let timer = setInterval(function () {
         context.drawImage(video,0,0,cameraWidth,cameraHeight,0,0,478,850);
         // 扫码条形码
-        let imgUri = canvas.toDataURL();
-        readBarcode(imgUri,timer);
+        //let imgUri = canvas.toDataURL();
+        //readBarcode(imgUri,timer);
 
         // 扫码二维码
-        // let imageData = context.getImageData(0, 0, 478, 850);
-        // _this.readQrcode(imageData.data,timer);
+         let imageData = context.getImageData(0, 0, 478, 850);
+         readQrcode(imageData.data,timer);
       },1000)
     }
 
