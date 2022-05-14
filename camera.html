@@ -93,7 +93,8 @@
       mix-blend-mode: normal;
       opacity: 0.6;
       animation: scanLine 5s linear infinite alternate;
-      animation-fill-mode: both
+      animation-fill-mode: both;
+      will-change: transform;
     }
     @keyframes  scanLine{
       0% {
@@ -294,7 +295,7 @@
         if (result){
           if(result.codeResult) {
             console.log(result.codeResult);
-            alert("扫码成功，结果是...", result.codeResult.code);
+            alert("扫码成功，结果是..."+result.codeResult.code);
           } else {
             console.log('正在扫条形码...')
           }
