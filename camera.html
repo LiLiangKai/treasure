@@ -151,7 +151,7 @@
     new window.VConsole()
 
     const scanView = document.querySelector('.scan-view')
-    const facingModeDom = document.querySelector('facing-mode')
+    const facingModeDom = document.querySelector('.facing-mode')
     const canvas = document.getElementById('canvas')
     const context = canvas.getContext('2d')
     const video = document.querySelector('#video')
@@ -215,7 +215,6 @@
         if(decodeType === 'qrcode') {
           decodeQrCode()
         }
-        clearTimeout(timer)
         timer = setTimeout(handle,1000)
       }
       timer = setTimeout(handle,1000)
@@ -234,13 +233,13 @@
       });
 
       if (code){
-        clearInterval(timer);
         console.log('ondata',code); 
       }
       decodeing = false
     }
 
     function initVideo () {
+      clearTimeout(timer)
       video.pause()
       openCamera({
         video: {
@@ -251,9 +250,15 @@
       })
     }
 
+    function switchCameraMode () {
+      useRearCamera = !useRearCamera
+      facingModeDom.innerText = useRearCamera ? '后置' : '前置'
+      initVideo()
+    }
+
     function init () {
       window.addEventListener('resize', resizeWindow)
-      
+      facingModeDom.addEventListener('click', switchCameraMode)
       resizeWindow()
       initVideo()
     }
