@@ -132,7 +132,9 @@
     <video id="video" autoplay playsinline="true" webkit-playsinline="true"></video>
     <div class="scanner-inner">
       <div class="topbar">
-        <div class="topbar-left"></div>
+        <div class="topbar-left">
+          <div class="tool tool-close">X</div>
+        </div>
         <div class="topbar-right">
           <div class="tool facing-mode">后置</div>
         </div>
@@ -162,6 +164,7 @@
     const canvas = document.getElementById('canvas')
     const context = canvas.getContext('2d')
     const video = document.querySelector('#video')
+    const toolClose = document.querySelector('.tool-close')
     let cameraWidth
     let cameraHeight
     let useRearCamera = false
@@ -190,6 +193,14 @@
       } else {
         console.log("你的浏览器不支持访问用户媒体设备")
       }
+    }
+
+    function stopCamera () {
+      const stream = video.srcObject
+      const tracks = stream.getTracks();
+      tracks && tracks.forEach(track => {
+          track.stop()
+      })
     }
 
     function videoError(error){
@@ -250,14 +261,13 @@
       video.pause()
       openCamera({
         video: {
-          facingMode: !useRearCamera ? 'user' : {
-            exact: "environment"
-          }
+          facingMode: !useRearCamera ? 'user' : 'environment'
         }
       })
     }
 
     function switchCameraMode () {
+      stopCamera()
       useRearCamera = !useRearCamera
       facingModeDom.innerText = useRearCamera ?  '前置' : '后置'
       initVideo()
@@ -266,6 +276,7 @@
     function init () {
       window.addEventListener('resize', resizeWindow)
       facingModeDom.addEventListener('click', switchCameraMode)
+      toolClose.addEventListener('click', stopCamera)
       resizeWindow()
       initVideo()
     }
