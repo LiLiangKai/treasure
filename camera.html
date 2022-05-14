@@ -15,7 +15,6 @@
       width: 100%;
       height: 100%;
       z-index: 10;
-      background-color: rgba(0,0,0,.2);
     }
     .scanner-inner {
       position: absolute;
@@ -119,6 +118,9 @@
       object-fit: cover;
       background-color: #fff;
     }
+    #video.hidden {
+      visibility: hidden;
+    }
     #canvas {
       position: absolute;
       top: 0;
@@ -136,7 +138,7 @@
           <div class="tool tool-close">X</div>
         </div>
         <div class="topbar-right">
-          <div class="tool facing-mode">后置</div>
+          <div class="tool facing-mode">前置</div>
         </div>
       </div>
       <div class="scan">
@@ -148,7 +150,10 @@
           <div class="scan-line"></div>
         </div>
       </div>
-      <div class="operate"></div>
+      <div class="operate">
+        <button onclick="scanBarCode()">barCodde</button>
+        <button onclick="scanQrCode()">QrCodde</button>
+      </div>
     </div>
     <canvas id="canvas" style="display: none"></canvas>
   </div>
@@ -167,8 +172,8 @@
     const toolClose = document.querySelector('.tool-close')
     let cameraWidth
     let cameraHeight
-    let useRearCamera = false
-    let decodeing = false
+    let useRearCamera = true
+    let decoding = false
     let decodeType = 'qrcode'
     let timer
 
@@ -195,12 +200,23 @@
       }
     }
 
+    function scanQrCode () {
+      decodeType = 'qrcode'
+      console.log('decodeType: ', decodeType)
+    }
+    function scanBarCode () {
+      decodeType = 'barcode'
+      console.log('decodeType: ', decodeType)
+    }
+
     function stopCamera () {
+      clearTimeout(timer)
       const stream = video.srcObject
       const tracks = stream.getTracks();
       tracks && tracks.forEach(track => {
           track.stop()
       })
+      video.classList.add('hidden')
     }
 
     function videoError(error){
@@ -208,6 +224,7 @@
     }
 
     function videoSuccess(stream) {
+      video.classList.remove('hidden')
       //将视频流设置为video元素的源
       video.srcObject = stream;
       //播放视频
@@ -228,10 +245,12 @@
 
     function readImg(){
       const handle = () => {
-        if(decodeing) return
+        if(decoding) return
         context.drawImage(video,0,0,cameraWidth,cameraHeight,0,0,cameraWidth,cameraHeight);
         if(decodeType === 'qrcode') {
           decodeQrCode()
+        } else if(decodeType === 'barcode') {
+          decodeBarCode()
         }
         timer = setTimeout(handle,1000)
       }
@@ -240,9 +259,14 @@
 
     // 扫码二维码
     function decodeQrCode () {
-      decodeing = true
-      imageData = context.getImageData(0, 0, cameraWidth, cameraHeight);
+      decoding = true
+      const imageData = context.getImageData(0, 0, cameraWidth, cameraHeight);
       readQrcode(imageData.data,timer);
+    }
+
+    function decodeBarCode () {
+      decoding = true
+      readBarcode(canvas.toDataURL());
     }
 
     function readQrcode(data,timer){
@@ -253,7 +277,32 @@
       if (code){
         console.log('ondata',code); 
       }
-      decodeing = false
+      decoding = false
+    }
+
+    function readBarcode(imgBase64){
+      Quagga.decodeSingle({
+        decoder: {
+          readers: [
+            'code_128_reader',
+            'ean_reader'
+          ]
+        },
+        multiple: false,
+        src: imgBase64
+      }, function(result){
+        if (result){
+          if(result.codeResult) {
+            console.log(result.codeResult);
+            alert("扫码成功，结果是...", result.codeResult.code);
+          } else {
+            console.log('正在扫条形码...')
+          }
+        } else {
+          console.log('正在扫条形码...')
+        }
+        decoding = false
+      });
     }
 
     function initVideo () {
