@@ -31,6 +31,13 @@
       justify-content: space-between;
       align-items: flex-start;
     }
+    .tool {
+      width: 50px;
+      height: 50px;
+      text-align: center;
+      line-height: 50px;
+      cursor: pointer;
+    }
     .scan {
       position: relative;
       height: 50%;
@@ -127,7 +134,7 @@
       <div class="topbar">
         <div class="topbar-left"></div>
         <div class="topbar-right">
-          <div class="facing-mode">前置</div>
+          <div class="tool facing-mode">后置</div>
         </div>
       </div>
       <div class="scan">
@@ -252,7 +259,7 @@
 
     function switchCameraMode () {
       useRearCamera = !useRearCamera
-      facingModeDom.innerText = useRearCamera ? '后置' : '前置'
+      facingModeDom.innerText = useRearCamera ?  '前置' : '后置'
       initVideo()
     }
 
