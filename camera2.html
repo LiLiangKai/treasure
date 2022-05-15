@@ -15,7 +15,7 @@
       <button onclick="scanBarCode()">barCodde</button>
       <button onclick="scanQrCode()">QrCodde</button>
     </div>
-    <canvas id="canvas" style="display: none"></canvas>
+    <canvas id="canvas" style="display: block"></canvas>
 
     <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2/dist/quagga.min.js"></script>
@@ -43,8 +43,12 @@
       function readImg (base64) {
         const image = new Image()
         image.onload = () => {
-          canvas.width = image.width
-          canvas.height = image.height
+          const { width, height } = image
+          const canvasWidth = Math.min(window.innerWidth, width)
+          const ratio = width / height
+          canvas.width = canvasWidth
+          canvas.height = (canvasWidth / ratio) >> 0
+          console.log('size: ', canvas.width, canvas.height)
           context.drawImage(image,0,0,image.width,image.height,0,0,canvas.width,canvas.height)
           if(decodeType === 'qrcode') {
             decodeQrCode()
