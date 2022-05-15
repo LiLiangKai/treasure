@@ -277,6 +277,7 @@
 
       if (code){
         console.log('ondata',code); 
+        alert('qrcode code = ' + code.data)
       }
       decoding = false
     }
@@ -295,7 +296,7 @@
         if (result){
           if(result.codeResult) {
             console.log(result.codeResult);
-            alert("扫码成功，结果是..."+result.codeResult.code);
+            alert("barcode code = " + result.codeResult.code);
           } else {
             console.log('正在扫条形码...')
           }
