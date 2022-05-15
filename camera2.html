@@ -44,7 +44,7 @@
         const image = new Image()
         image.onload = () => {
           const { width, height } = image
-          const canvasWidth = Math.min(window.innerWidth, width)
+          const canvasWidth = Math.min(400, window.innerWidth, width)
           const ratio = width / height
           canvas.width = canvasWidth
           canvas.height = (canvasWidth / ratio) >> 0
