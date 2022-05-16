@@ -22,8 +22,17 @@
   </style>
 </head>
 <body>
-  <button id="start">start</button>
-  <button id="stop">stop</button>
+  <div style="border-bottom: 1px solid #ddd;padding-bottom: 20px;margin-bottom: 20px;">
+    <button onclick="switchMode('barcode')">barCode</button>
+    <button onclick="switchMode('qrcode')">qrCode</button>
+    <button onclick="switchMode('all')">all</button>
+    <br>
+    <span id="curMode"></span>
+  </div>
+  <div>
+    <button id="start">start</button>
+    <button id="stop">stop</button>
+  </div>
   <div class="video-wrap">
     <video id="video" width="600" height="400" style="border: 1px solid gray"></video>
   </div>
@@ -51,29 +60,42 @@
   let scaning = false
   let selectedDeviceId
   
-  function init () {
+  
+  function initMultiFormatReader () {
     codeReader = new ZXing.BrowserMultiFormatReader()
-    console.log('ZXing code reader initialized')
-    codeReader.listVideoInputDevices().then((videoInputDevices) => {
-      console.log('videoInputDevices: ', videoInputDevices)
-      if(videoInputDevices.length > 0) {
-        videoInputDevices.forEach(item => {
-          deviceIds.push({
-            value: item.deviceId,
-            label: item.label
-          })
-          const sourceOption = document.createElement('option')
-          sourceOption.text = item.label
-          sourceOption.value = item.deviceId
-          sourceSelect.appendChild(sourceOption)
+    console.log('ZXing BrowserMultiFormatReader reader initialized')
+    codeReader.listVideoInputDevices().then(updateVideoInputDevices)
+  }
+
+  function initBarCodeReader () {
+    codeReader = new ZXing.BrowserBarcodeReader()
+    console.log('ZXing BrowserBarcodeReader reader initialized')
+    codeReader.getVideoInputDevices().then(updateVideoInputDevices)
+  }
+
+  function initQrCodeRender () {
+    codeReader = new ZXing.BrowserQRCodeReader()
+    console.log('ZXing BrowserQRCodeReader reader initialized')
+    codeReader.listVideoInputDevices().then(updateVideoInputDevices)
+  }
+
+  function updateVideoInputDevices (videoInputDevices) {
+    console.log('videoInputDevices: ', videoInputDevices)
+    if(videoInputDevices.length > 0) {
+      sourceSelect.innerHTML = ''
+      videoInputDevices.forEach(item => {
+        deviceIds.push({
+          value: item.deviceId,
+          label: item.label
         })
-        selectedDeviceId = deviceIds[0].value
-        sourceSelect.onchange = () => {
-          selectedDeviceId = sourceSelect.value;
-        }
-      }
-      loaded = true
-    })
+        const sourceOption = document.createElement('option')
+        sourceOption.text = item.label
+        sourceOption.value = item.deviceId
+        sourceSelect.appendChild(sourceOption)
+      })
+      selectedDeviceId = deviceIds[0].value
+    }
+    loaded = true
   }
 
   function startScan () {
@@ -85,6 +107,7 @@
     codeReader.decodeFromVideoDevice(selectedDeviceId, video, (result, error) => {
       if(result) {
         console.log('decode result: ', result)
+        alert(result.code)
         resultDom.innerText = result.text
       }
       if(error && !(error instanceof ZXing.NotFoundException)) {
@@ -100,18 +123,32 @@
     video.pause()
   }
 
-
-  init()
-
   startBtn.addEventListener('click', startScan)
   stopBtn.addEventListener('click', stop)
   noSelectBtn.addEventListener('click', () => {
     sourceSelect.value = ''
     selectedDeviceId = ''
   })
+  sourceSelect.addEventListener('change', () => {
+    selectedDeviceId = sourceSelect.value
+  })
   video.addEventListener('canplay', () => {
     console.log('视频分辨率: ', video.videoWidth, video.videoHeight)
   })
+
+  function switchMode (mode) {
+    stop()
+    loaded = false
+    curMode.innerText = mode
+    switch(mode) {
+      case 'barcode':
+        return initBarCodeReader()
+      case 'qrcode':
+        return initQrCodeRender()
+      case 'all':
+        return initMultiFormatReader()
+    }
+  }
 
 </script>
 </body>
