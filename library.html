@@ -69,7 +69,7 @@
     if(!deviceIds.length) {
       throw 'not found any Video Device'
     }
-    codeReader.decodeFromVideoDevice(selectedDeviceId, video).then(res => {
+    codeReader.decodeOnceFromVideoDevice(selectedDeviceId, video).then(res => {
       console.log('decode result: ', res)
       alert(res.text)
     }).catch(err => {
@@ -79,7 +79,6 @@
   }
 
   function stop () {
-    if(!scaning) return
     scaning = false
     codeReader && codeReader.reset()
   }
@@ -89,9 +88,9 @@
 
   startBtn.addEventListener('click', startScan)
   stopBtn.addEventListener('click', stop)
-  // video.addEventListener('canplay', () => {
-  //   console.log('视频分辨率: ', video.videoWidth, video.videoHeight)
-  // })
+  video.addEventListener('canplay', () => {
+    console.log('视频分辨率: ', video.videoWidth, video.videoHeight)
+  })
 
 </script>
 </body>
