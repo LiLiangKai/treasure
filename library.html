@@ -15,6 +15,10 @@
       height: 100%;
       overflow: auto;
     }
+    button {
+      width: 90px;
+      height: 32px;
+    }
   </style>
 </head>
 <body>
@@ -24,8 +28,11 @@
     <video id="video" width="600" height="400" style="border: 1px solid gray"></video>
   </div>
   <div>
-    <select id="sourceSelect" style="max-width:400px">
-    </select>
+    <p>select one camera</p>
+    <p>
+      <select id="sourceSelect" style="max-width:400px"></select>
+    </p>
+    <button id="noSelect">no select camera</button>
   </div>
 <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
 <script type="text/javascript" src="https://unpkg.com/@zxing/library@latest"></script>
@@ -36,29 +43,31 @@
   const startBtn = document.getElementById('start')
   const stopBtn = document.getElementById('stop')
   const sourceSelect = document.getElementById('sourceSelect')
+  const noSelectBtn = document.getElementById('noSelect')
   let codeReader
   let loaded = false
   let scaning = false
   let selectedDeviceId
   
   function init () {
-    codeReader = new ZXing.BrowserBarcodeReader()
+    codeReader = new ZXing.BrowserMultiFormatReader()
     console.log('ZXing code reader initialized')
-    codeReader.getVideoInputDevices().then((videoInputDevices) => {
+    codeReader.listVideoInputDevices().then((videoInputDevices) => {
       console.log('videoInputDevices: ', videoInputDevices)
-      sourceSelect.innerHTML = ''
-      videoInputDevices.forEach(item => {
-        deviceIds.push({
-          value: item.deviceId,
-          label: item.label
+      if(videoInputDevices.length > 0) {
+        videoInputDevices.forEach(item => {
+          deviceIds.push({
+            value: item.deviceId,
+            label: item.label
+          })
+          const sourceOption = document.createElement('option')
+          sourceOption.text = item.label
+          sourceOption.value = item.deviceId
+          sourceSelect.appendChild(sourceOption)
         })
-        const sourceOption = document.createElement('option')
-        sourceOption.text = item.label
-        sourceOption.value = item.deviceId
-        sourceSelect.appendChild(sourceOption)
-      })
-      sourceSelect.onchange = () => {
-          selectedDeviceId = sourceSelect.value;
+        sourceSelect.onchange = () => {
+            selectedDeviceId = sourceSelect.value;
+        }
       }
       loaded = true
     })
@@ -69,11 +78,14 @@
     if(!deviceIds.length) {
       throw 'not found any Video Device'
     }
-    codeReader.decodeOnceFromVideoDevice(selectedDeviceId, video).then(res => {
-      console.log('decode result: ', res)
-      alert(res.text)
-    }).catch(err => {
-      console.log('decode error: ', err)
+    codeReader.decodeFromVideoDevice(selectedDeviceId, video, (result, error) => {
+      if(result) {
+        console.log('decode result: ', result)
+        alert(result.text)
+      }
+      if(error && !(error instanceof ZXing.NotFoundException)) {
+        console.log('error: ', error)
+      }
     })
     scaning = true
   }
@@ -88,6 +100,10 @@
 
   startBtn.addEventListener('click', startScan)
   stopBtn.addEventListener('click', stop)
+  noSelectBtn.addEventListener('click', () => {
+    sourceSelect.value = ''
+    selectedDeviceId = ''
+  })
   video.addEventListener('canplay', () => {
     console.log('视频分辨率: ', video.videoWidth, video.videoHeight)
   })
