@@ -5,11 +5,24 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+    }
+    .video-wrap {
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+    }
+  </style>
 </head>
 <body>
   <button id="start">start</button>
   <button id="stop">stop</button>
-  <video id="video" width="600" height="400" style="border: 1px solid gray"></video>
+  <div class="video-wrap">
+    <video id="video" style="border: 1px solid gray"></video>
+  </div>
 <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
 <script type="text/javascript" src="https://unpkg.com/@zxing/library@latest"></script>
 <script>
@@ -64,8 +77,10 @@
   stopBtn.addEventListener('click', stop)
   video.addEventListener('canplay', () => {
     console.log('视频分辨率: ', video.videoWidth, video.videoHeight)
-    video.width = video.videoWidth
-    video.height = video.videoHeight
+    const curWidth = Math.min(400, window.innerWidth, video.videoWidth)
+    const ratio = video.videoWidth /video.videoHeight
+    video.width = curWidth
+    video.height = (curWidth / ratio) >> 0
   })
 
 </script>
