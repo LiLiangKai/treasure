@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <button id="start">start</button>
+  <button id="stop">stop</button>
+  <video id="video" width="600" height="400" style="border: 1px solid gray"></video>
+<script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
+<script type="text/javascript" src="https://unpkg.com/@zxing/library@latest"></script>
+<script>
+  new window.VConsole()
+  const deviceIds = []
+  const video = document.getElementById('video')
+  const startBtn = document.getElementById('start')
+  const stopBtn = document.getElementById('stop')
+  let codeReader
+  let loaded = false
+  let scaning = false
+  
+  function init () {
+    codeReader = new ZXing.BrowserBarcodeReader()
+    console.log('ZXing code reader initialized')
+    codeReader.getVideoInputDevices().then((videoInputDevices) => {
+      console.log('videoInputDevices: ', videoInputDevices)
+      videoInputDevices.forEach(item => {
+        deviceIds.push({
+          value: item.deviceId,
+          label: item.label
+        })
+      })
+      loaded = true
+    })
+  }
+
+  function startScan () {
+    if(!loaded || scaning) return
+    if(!deviceIds.length) {
+      throw 'not found any Video Device'
+    }
+    codeReader.decodeFromVideoDevice(null, video).then(res => {
+      console.log('decode result: ', res)
+      alert(res.text)
+    }).catch(err => {
+      console.log('decode error: ', err)
+    })
+    scaning = true
+  }
+
+  function stop () {
+    if(!scaning) return
+    scaning = false
+    codeReader && codeReader.reset()
+  }
+
+
+  init()
+
+  startBtn.addEventListener('click', startScan)
+  stopBtn.addEventListener('click', stop)
+  video.addEventListener('canplay', () => {
+    console.log('视频分辨率: ', video.videoWidth, video.videoHeight)
+    video.width = video.videoWidth
+    video.height = video.videoHeight
+  })
+
+</script>
+</body>
+</html>
