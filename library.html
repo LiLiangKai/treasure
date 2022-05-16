@@ -21,7 +21,11 @@
   <button id="start">start</button>
   <button id="stop">stop</button>
   <div class="video-wrap">
-    <video id="video" width="300" height="200" style="border: 1px solid gray"></video>
+    <video id="video" width="600" height="400" style="border: 1px solid gray"></video>
+  </div>
+  <div>
+    <select id="sourceSelect" style="max-width:400px">
+    </select>
   </div>
 <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
 <script type="text/javascript" src="https://unpkg.com/@zxing/library@latest"></script>
@@ -31,21 +35,31 @@
   const video = document.getElementById('video')
   const startBtn = document.getElementById('start')
   const stopBtn = document.getElementById('stop')
+  const sourceSelect = document.getElementById('sourceSelect')
   let codeReader
   let loaded = false
   let scaning = false
+  let selectedDeviceId
   
   function init () {
     codeReader = new ZXing.BrowserBarcodeReader()
     console.log('ZXing code reader initialized')
     codeReader.getVideoInputDevices().then((videoInputDevices) => {
       console.log('videoInputDevices: ', videoInputDevices)
+      sourceSelect.innerHTML = ''
       videoInputDevices.forEach(item => {
         deviceIds.push({
           value: item.deviceId,
           label: item.label
         })
+        const sourceOption = document.createElement('option')
+        sourceOption.text = item.label
+        sourceOption.value = item.deviceId
+        sourceSelect.appendChild(sourceOption)
       })
+      sourceSelect.onchange = () => {
+          selectedDeviceId = sourceSelect.value;
+      }
       loaded = true
     })
   }
@@ -55,7 +69,7 @@
     if(!deviceIds.length) {
       throw 'not found any Video Device'
     }
-    codeReader.decodeFromVideoDevice(null, video).then(res => {
+    codeReader.decodeFromVideoDevice(selectedDeviceId, video).then(res => {
       console.log('decode result: ', res)
       alert(res.text)
     }).catch(err => {
