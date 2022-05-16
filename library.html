@@ -16,7 +16,7 @@
       overflow: auto;
     }
     button {
-      width: 90px;
+      min-width: 90px;
       height: 32px;
     }
   </style>
@@ -50,7 +50,9 @@
   let selectedDeviceId
   
   function init () {
-    codeReader = new ZXing.BrowserMultiFormatReader()
+    const hints = new Map()
+    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.CODE_128])
+    codeReader = new ZXing.BrowserMultiFormatReader(hints)
     console.log('ZXing code reader initialized')
     codeReader.listVideoInputDevices().then((videoInputDevices) => {
       console.log('videoInputDevices: ', videoInputDevices)
@@ -65,8 +67,9 @@
           sourceOption.value = item.deviceId
           sourceSelect.appendChild(sourceOption)
         })
+        selectedDeviceId = deviceIds[0].value
         sourceSelect.onchange = () => {
-            selectedDeviceId = sourceSelect.value;
+          selectedDeviceId = sourceSelect.value;
         }
       }
       loaded = true
@@ -78,6 +81,7 @@
     if(!deviceIds.length) {
       throw 'not found any Video Device'
     }
+    console.log('use device: ', selectedDeviceId)
     codeReader.decodeFromVideoDevice(selectedDeviceId, video, (result, error) => {
       if(result) {
         console.log('decode result: ', result)
@@ -93,6 +97,7 @@
   function stop () {
     scaning = false
     codeReader && codeReader.reset()
+    video.pause()
   }
 
 
