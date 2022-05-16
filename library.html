@@ -75,13 +75,9 @@
 
   startBtn.addEventListener('click', startScan)
   stopBtn.addEventListener('click', stop)
-  video.addEventListener('canplay', () => {
-    console.log('视频分辨率: ', video.videoWidth, video.videoHeight)
-    const curWidth = Math.min(300, window.innerWidth, video.videoWidth)
-    const ratio = video.videoWidth /video.videoHeight
-    video.width = curWidth
-    video.height = (curWidth / ratio) >> 0
-  })
+  // video.addEventListener('canplay', () => {
+  //   console.log('视频分辨率: ', video.videoWidth, video.videoHeight)
+  // })
 
 </script>
 </body>
