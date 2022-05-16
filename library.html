@@ -62,19 +62,23 @@
   
   
   function initMultiFormatReader () {
-    codeReader = new ZXing.BrowserMultiFormatReader()
+    const hints = new Map()
+    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.QR_CODE, ZXing.BarcodeFormat.CODE_128])
+    codeReader = new ZXing.BrowserMultiFormatReader(hints,1000)
     console.log('ZXing BrowserMultiFormatReader reader initialized')
     codeReader.listVideoInputDevices().then(updateVideoInputDevices)
   }
 
   function initBarCodeReader () {
-    codeReader = new ZXing.BrowserBarcodeReader()
+    const hints = new Map()
+    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.CODE_128])
+    codeReader = new ZXing.BrowserBarcodeReader(1000,hints)
     console.log('ZXing BrowserBarcodeReader reader initialized')
     codeReader.getVideoInputDevices().then(updateVideoInputDevices)
   }
 
   function initQrCodeRender () {
-    codeReader = new ZXing.BrowserQRCodeReader()
+    codeReader = new ZXing.BrowserQRCodeReader(1000)
     console.log('ZXing BrowserQRCodeReader reader initialized')
     codeReader.listVideoInputDevices().then(updateVideoInputDevices)
   }
@@ -107,7 +111,7 @@
     codeReader.decodeFromVideoDevice(selectedDeviceId, video, (result, error) => {
       if(result) {
         console.log('decode result: ', result)
-        alert(result.code)
+        alert(result.text)
         resultDom.innerText = result.text
       }
       if(error && !(error instanceof ZXing.NotFoundException)) {
