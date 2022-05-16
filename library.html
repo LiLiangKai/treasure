@@ -27,6 +27,7 @@
   <div class="video-wrap">
     <video id="video" width="600" height="400" style="border: 1px solid gray"></video>
   </div>
+  <div>result: <span id="result"></span></div>
   <div>
     <p>select one camera</p>
     <p>
@@ -44,15 +45,14 @@
   const stopBtn = document.getElementById('stop')
   const sourceSelect = document.getElementById('sourceSelect')
   const noSelectBtn = document.getElementById('noSelect')
+  const resultDom = document.getElementById('result')
   let codeReader
   let loaded = false
   let scaning = false
   let selectedDeviceId
   
   function init () {
-    const hints = new Map()
-    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.CODE_128])
-    codeReader = new ZXing.BrowserMultiFormatReader(hints)
+    codeReader = new ZXing.BrowserMultiFormatReader()
     console.log('ZXing code reader initialized')
     codeReader.listVideoInputDevices().then((videoInputDevices) => {
       console.log('videoInputDevices: ', videoInputDevices)
@@ -85,7 +85,7 @@
     codeReader.decodeFromVideoDevice(selectedDeviceId, video, (result, error) => {
       if(result) {
         console.log('decode result: ', result)
-        alert(result.text)
+        resultDom.innerText = result.text
       }
       if(error && !(error instanceof ZXing.NotFoundException)) {
         console.log('error: ', error)
