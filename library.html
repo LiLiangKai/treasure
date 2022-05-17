@@ -69,7 +69,7 @@
   function initMultiFormatReader () {
     const hints = new Map()
     hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.QR_CODE, ZXing.BarcodeFormat.CODE_128])
-    codeReader = new ZXing.BrowserMultiFormatReader(hints,1000)
+    codeReader = new ZXing.BrowserMultiFormatReader(hints,300)
     console.log('ZXing BrowserMultiFormatReader reader initialized')
     codeReader.listVideoInputDevices().then(updateVideoInputDevices)
   }
@@ -77,13 +77,13 @@
   function initBarCodeReader () {
     const hints = new Map()
     hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.CODE_128])
-    codeReader = new ZXing.BrowserBarcodeReader(1000,hints)
+    codeReader = new ZXing.BrowserBarcodeReader(300,hints)
     console.log('ZXing BrowserBarcodeReader reader initialized')
     codeReader.getVideoInputDevices().then(updateVideoInputDevices)
   }
 
   function initQrCodeRender () {
-    codeReader = new ZXing.BrowserQRCodeReader(1000)
+    codeReader = new ZXing.BrowserQRCodeReader(300)
     console.log('ZXing BrowserQRCodeReader reader initialized')
     codeReader.listVideoInputDevices().then(updateVideoInputDevices)
   }
