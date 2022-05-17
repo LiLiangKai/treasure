@@ -19,6 +19,9 @@
       min-width: 90px;
       height: 32px;
     }
+    video.rotate {
+      transform: rotate(90deg);
+    }
   </style>
 </head>
 <body>
@@ -32,6 +35,7 @@
   <div>
     <button id="start">start</button>
     <button id="stop">stop</button>
+    <button id="rotate">rotate</button>
   </div>
   <div class="video-wrap">
     <video id="video" width="600" height="400" style="border: 1px solid gray"></video>
@@ -54,6 +58,7 @@
   const stopBtn = document.getElementById('stop')
   const sourceSelect = document.getElementById('sourceSelect')
   const noSelectBtn = document.getElementById('noSelect')
+  const rotateBtn = document.getElementById('rotate')
   const resultDom = document.getElementById('result')
   let codeReader
   let loaded = false
@@ -138,6 +143,14 @@
   })
   video.addEventListener('canplay', () => {
     console.log('视频分辨率: ', video.videoWidth, video.videoHeight)
+  })
+  rotateBtn.addEventListener('click', () => {
+    const isRotate = video.classList.contains('rotate')
+    if(isRotate) {
+      video.classList.remove('rotate')
+    } else {
+      video.classList.add('rotate')
+    }
   })
 
   function switchMode (mode) {
