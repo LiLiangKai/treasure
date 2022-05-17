@@ -92,7 +92,7 @@
       background: linear-gradient(180deg, #EE4D2D 0%, rgba(255, 255, 255, 0.0001) 62.71%);
       mix-blend-mode: normal;
       opacity: 0.6;
-      animation: scanLine 5s linear infinite alternate;
+      animation: scanLine 5s linear infinite;
       animation-fill-mode: both;
       will-change: transform;
     }
@@ -100,11 +100,8 @@
       0% {
         transform: translateY(-100%) matrix(1, 0, 0, -1, 0, 0);
       }
-      80% {
-        transform: translateY(250%) matrix(1, 0, 0, -1, 0, 0)
-      }
       100% {
-        transform: translateY(260%) matrix(1, 0, 0, 1, 0, 0);
+        transform: translateY(200%) matrix(1, 0, 0, -1, 0, 0)
       }
     }
     .operate {
@@ -171,6 +168,7 @@
     const context = canvas.getContext('2d')
     const video = document.querySelector('#video')
     const toolClose = document.querySelector('.tool-close')
+    const videoDevices = []
     let cameraWidth
     let cameraHeight
     let useRearCamera = true
@@ -262,7 +260,7 @@
     function decodeQrCode () {
       decoding = true
       const imageData = context.getImageData(0, 0, cameraWidth, cameraHeight);
-      readQrcode(imageData.data,timer);
+      readQrcode(imageData.data);
     }
 
     function decodeBarCode () {
@@ -270,14 +268,13 @@
       readBarcode(canvas.toDataURL());
     }
 
-    function readQrcode(data,timer){
+    function readQrcode(data){
       let code = jsQR(data, cameraWidth, cameraHeight, {
         inversionAttempts: "dontInvert",
       });
 
       if (code){
         console.log('ondata',code); 
-        alert('qrcode code = ' + code.data)
       }
       decoding = false
     }
@@ -296,7 +293,7 @@
         if (result){
           if(result.codeResult) {
             console.log(result.codeResult);
-            alert("barcode code = " + result.codeResult.code);
+            alert("扫码成功，结果是..."+result.codeResult.code);
           } else {
             console.log('正在扫条形码...')
           }
@@ -310,11 +307,22 @@
     function initVideo () {
       clearTimeout(timer)
       video.pause()
-      openCamera({
-        video: {
-          facingMode: !useRearCamera ? 'user' : 'environment'
-        }
-      })
+
+      if(videoDevices.length > 0) {
+        const deviceId = !useRearCamera ? videoDevices[0].deviceId : videoDevices[videoDevices.length-1].deviceId
+        console.log('video deviceId: ', deviceId)
+        openCamera({
+          video: {
+            deviceId: { exact: deviceId }
+          }
+        })
+      } else {
+        openCamera({
+          video: {
+            facingMode: !useRearCamera ? 'user' : 'environment'
+          }
+        })
+      }
     }
 
     function switchCameraMode () {
@@ -329,7 +337,19 @@
       facingModeDom.addEventListener('click', switchCameraMode)
       toolClose.addEventListener('click', stopCamera)
       resizeWindow()
-      initVideo()
+
+      navigator.mediaDevices.enumerateDevices().then(devices => {
+        for(const device of devices) {
+          const kind = device.kind
+          if(kind !== "videoinput") continue
+          videoDevices.push({
+            deviceId: device.deviceId,
+            label: device.label
+          })
+          console.log('videoDevices: ', videoDevices)
+        }
+        initVideo()
+      })
     }
 
     init()
