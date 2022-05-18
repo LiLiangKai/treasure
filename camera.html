@@ -201,10 +201,12 @@
     }
 
     function scanQrCode () {
+      decoding = false
       decodeType = 'qrcode'
       console.log('decodeType: ', decodeType)
     }
     function scanBarCode (type) {
+      decoding = false
       decodeType = 'barcode'
       barcodeJs = type
       console.log('decodeType: ', decodeType)
@@ -321,10 +323,10 @@
       const imgBase64 = canvas.toDataURL()
       let startTime = Date.now()
       Quagga.decodeSingle({
+        numOfWorkers: 0,
         decoder: {
           readers: [
-            'code_128_reader',
-            'ean_reader'
+            'code_128_reader'
           ]
         },
         multiple: false,
