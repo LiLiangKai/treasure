@@ -35,10 +35,9 @@
   <div>
     <button id="start">start</button>
     <button id="stop">stop</button>
-    <button id="rotate">rotate</button>
   </div>
   <div class="video-wrap">
-    <video id="video" width="600" height="400" style="border: 1px solid gray"></video>
+    <video id="video" ></video>
   </div>
   <div>result: <span id="result"></span></div>
   <div>
@@ -58,7 +57,6 @@
   const stopBtn = document.getElementById('stop')
   const sourceSelect = document.getElementById('sourceSelect')
   const noSelectBtn = document.getElementById('noSelect')
-  const rotateBtn = document.getElementById('rotate')
   const resultDom = document.getElementById('result')
   let codeReader
   let loaded = false
@@ -69,7 +67,7 @@
   function initMultiFormatReader () {
     const hints = new Map()
     hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.QR_CODE, ZXing.BarcodeFormat.CODE_128])
-    codeReader = new ZXing.BrowserMultiFormatReader(hints,300)
+    codeReader = new ZXing.BrowserMultiFormatReader(hints,200)
     console.log('ZXing BrowserMultiFormatReader reader initialized')
     codeReader.listVideoInputDevices().then(updateVideoInputDevices)
   }
@@ -77,13 +75,13 @@
   function initBarCodeReader () {
     const hints = new Map()
     hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.CODE_128])
-    codeReader = new ZXing.BrowserBarcodeReader(300,hints)
+    codeReader = new ZXing.BrowserBarcodeReader(200,hints)
     console.log('ZXing BrowserBarcodeReader reader initialized')
     codeReader.getVideoInputDevices().then(updateVideoInputDevices)
   }
 
   function initQrCodeRender () {
-    codeReader = new ZXing.BrowserQRCodeReader(300)
+    codeReader = new ZXing.BrowserQRCodeReader(200)
     console.log('ZXing BrowserQRCodeReader reader initialized')
     codeReader.listVideoInputDevices().then(updateVideoInputDevices)
   }
@@ -102,7 +100,8 @@
         sourceOption.value = item.deviceId
         sourceSelect.appendChild(sourceOption)
       })
-      selectedDeviceId = deviceIds[0].value
+      selectedDeviceId = deviceIds[deviceIds.length-1].value
+      sourceSelect.value = selectedDeviceId
     }
     loaded = true
   }
@@ -113,15 +112,19 @@
       throw 'not found any Video Device'
     }
     console.log('use device: ', selectedDeviceId)
+    let startTime = Date.now()
     codeReader.decodeFromVideoDevice(selectedDeviceId, video, (result, error) => {
+      const now = Date.now()
       if(result) {
         console.log('decode result: ', result)
+        console.log('decodeTime: ', now - startTime, 'ms')
         alert(result.text)
         resultDom.innerText = result.text
       }
       if(error && !(error instanceof ZXing.NotFoundException)) {
         console.log('error: ', error)
       }
+      startTime = now
     })
     scaning = true
   }
@@ -143,14 +146,6 @@
   })
   video.addEventListener('canplay', () => {
     console.log('视频分辨率: ', video.videoWidth, video.videoHeight)
-  })
-  rotateBtn.addEventListener('click', () => {
-    const isRotate = video.classList.contains('rotate')
-    if(isRotate) {
-      video.classList.remove('rotate')
-    } else {
-      video.classList.add('rotate')
-    }
   })
 
   function switchMode (mode) {
