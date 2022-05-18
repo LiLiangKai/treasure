@@ -136,7 +136,6 @@
           <div class="tool tool-close">X</div>
         </div>
         <div class="topbar-right">
-          <div class="tool facing-mode">前置</div>
         </div>
       </div>
       <div class="scan">
@@ -149,21 +148,22 @@
         </div>
       </div>
       <div class="operate">
-        <button onclick="scanBarCode()">barCodde</button>
+        <button onclick="scanBarCode('quagga')">barCodde use Quagga.js</button>
+        <button onclick="scanBarCode('barcode')">barCodde use barcode-reader.js</button>
         <button onclick="scanQrCode()">QrCodde</button>
       </div>
     </div>
     <canvas id="canvas" style="display: none"></canvas>
   </div>
   <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2/dist/quagga.min.js"></script>
+  <script src="https://liliangkai.github.io/treasure/quagga.min.js"></script>
+  <script src="https://liliangkai.github.io/treasure/javascript-barcode-reader.umd.min.js"></script>
   <script src="https://cozmo.github.io/jsQR/jsQR.js"></script>
 
   <script>
     new window.VConsole()
 
     const scanView = document.querySelector('.scan-view')
-    const facingModeDom = document.querySelector('.facing-mode')
     const canvas = document.getElementById('canvas')
     const context = canvas.getContext('2d')
     const video = document.querySelector('#video')
@@ -175,6 +175,7 @@
     let decoding = false
     let decodeType = 'qrcode'
     let timer
+    let barcodeJs = 'quagga'
 
     function resizeWindow() {
       const size = scanView.offsetWidth
@@ -203,8 +204,9 @@
       decodeType = 'qrcode'
       console.log('decodeType: ', decodeType)
     }
-    function scanBarCode () {
+    function scanBarCode (type) {
       decodeType = 'barcode'
+      barcodeJs = type
       console.log('decodeType: ', decodeType)
     }
 
@@ -265,21 +267,59 @@
 
     function decodeBarCode () {
       decoding = true
-      readBarcode(canvas.toDataURL());
+      readBarcode();
     }
 
     function readQrcode(data){
+      let startTime = Date.now()
       let code = jsQR(data, cameraWidth, cameraHeight, {
         inversionAttempts: "dontInvert",
       });
 
       if (code){
         console.log('ondata',code); 
+        console.log('decodeTime: ', Date.now() - startTime, 'ms')
+        alert('qrcode: ' + code.data)
       }
       decoding = false
     }
 
-    function readBarcode(imgBase64){
+    function readBarcode(){
+      if(barcodeJs === 'quagga') {
+        useQuagge()
+      } else {
+        useBarcodeReader()
+      }
+    }
+
+    function useBarcodeReader () {
+      let startTime = Date.now()
+      const result = javascriptBarcodeReader({
+        /* Image file Path || {data: Uint8ClampedArray, width, height} || HTML5 Canvas ImageData */
+        image: canvas,
+        barcode: 'code-128',
+        // barcodeType: 'industrial',
+        options: {    
+          // useAdaptiveThreshold: true // for images with sahded portions
+          // singlePass: true
+        }
+      })
+        .then(code => {
+          const now = Date.now()
+          console.log('decodeTime: ', now - startTime, 'ms')
+          alert('barcode: ' + code)
+        })
+        .catch(err => {
+          console.log(err)
+        }).finally(() => {
+          console.log('正在扫条形码...')
+          decoding = false
+        })
+    }
+
+    function useQuagge () {
+      const imgBase64 = canvas.toDataURL()
+      let startTime = Date.now()
       Quagga.decodeSingle({
         decoder: {
           readers: [
@@ -292,8 +332,10 @@
       }, function(result){
         if (result){
           if(result.codeResult) {
+            const now = Date.now()
             console.log(result.codeResult);
-            alert("扫码成功，结果是..."+result.codeResult.code);
+            console.log('decodeTime: ', now - startTime, 'ms')
+            alert("qrcode: "+result.codeResult.code);
           } else {
             console.log('正在扫条形码...')
           }
@@ -334,7 +376,6 @@
 
     function init () {
       window.addEventListener('resize', resizeWindow)
-      facingModeDom.addEventListener('click', switchCameraMode)
       toolClose.addEventListener('click', stopCamera)
       resizeWindow()
 
