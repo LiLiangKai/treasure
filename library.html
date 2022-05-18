@@ -45,7 +45,10 @@
     <p>
       <select id="sourceSelect" style="max-width:400px"></select>
     </p>
+    <br>
     <button id="noSelect">no select camera</button>
+    <br>
+    <button id="tryHarder">try harder</button>
   </div>
 <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
 <script type="text/javascript" src="https://unpkg.com/@zxing/library@latest"></script>
@@ -58,15 +61,18 @@
   const sourceSelect = document.getElementById('sourceSelect')
   const noSelectBtn = document.getElementById('noSelect')
   const resultDom = document.getElementById('result')
+  const tryHarderBtn = document.getElementById('tryHarder')
   let codeReader
   let loaded = false
   let scaning = false
   let selectedDeviceId
+  let tryHarder = false
   
   
   function initMultiFormatReader () {
     const hints = new Map()
     hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.QR_CODE, ZXing.BarcodeFormat.CODE_128])
+    hints.set(ZXing.DecodeHintType.TRY_HARDER, tryHarder)
     codeReader = new ZXing.BrowserMultiFormatReader(hints,200)
     console.log('ZXing BrowserMultiFormatReader reader initialized')
     codeReader.listVideoInputDevices().then(updateVideoInputDevices)
@@ -75,6 +81,7 @@
   function initBarCodeReader () {
     const hints = new Map()
     hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.CODE_128])
+    hints.set(ZXing.DecodeHintType.TRY_HARDER, tryHarder)
     codeReader = new ZXing.BrowserBarcodeReader(200,hints)
     console.log('ZXing BrowserBarcodeReader reader initialized')
     codeReader.getVideoInputDevices().then(updateVideoInputDevices)
@@ -141,6 +148,9 @@
     sourceSelect.value = ''
     selectedDeviceId = ''
   })
+  tryHarderBtn.addEventListener('click', () => {
+    tryHarder = true
+  })
   sourceSelect.addEventListener('change', () => {
     selectedDeviceId = sourceSelect.value
   })
@@ -161,7 +171,15 @@
         return initMultiFormatReader()
     }
   }
-
+/*
+library 扫描条形码解码过程：
+1. 获取视频流当前帧，绘制到canvas上
+2. 调用canvas的getImageData方法获取imageData，imageData数据类型为Uint8ClampedArray
+3. 以一像素为一行，以行为最小解析单元，从中间向外检查行，在中间上下方交替搜索，有两种策略：
+  3.1 跳行解码，以高度进行划分，分为32份，每一份高度大约15像素左右(记为rowStep)，从中间行(height/2，，记为middle)处开始解码，从正反方向分别尝试解码，若能解码出结果则返回；否则继续解码 (middle-rowStep*1)行，接着 (middle+rowStep*1)行，(middle-rowStep*2)行，(middle+rowStep*2)行 ...。优缺点：速度快，但准确率低
+  3.2 逐行解码，流程跟3.1相同，只是rowStep为1。优缺点：准确率高，但速度慢。
+4. 解码根据条形码类型调用不同的解码算法
+*/
 </script>
 </body>
 </html>
