@@ -148,8 +148,8 @@
         </div>
       </div>
       <div class="operate">
-        <button onclick="scanBarCode('quagga')">barCodde use Quagga.js</button>
-        <button onclick="scanBarCode('barcode')">barCodde use barcode-reader.js</button>
+        <button onclick="scanBarCode('quagga')">barCodde</button>
+        <button onclick="scanBarCode('barcode')" style="display: none;">barCodde use barcode-reader.js</button>
         <button onclick="scanQrCode()">QrCodde</button>
       </div>
     </div>
@@ -253,9 +253,9 @@
         } else if(decodeType === 'barcode') {
           decodeBarCode()
         }
-        timer = setTimeout(handle,300)
+        timer = setTimeout(handle,200)
       }
-      timer = setTimeout(handle,300)
+      timer = setTimeout(handle,200)
     }
 
     // 扫码二维码
