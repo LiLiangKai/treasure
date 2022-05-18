@@ -149,7 +149,8 @@
     selectedDeviceId = ''
   })
   tryHarderBtn.addEventListener('click', () => {
-    tryHarder = true
+    tryHarder = !tryHarder
+    tryHarder.innerText = 'try harder: ' + tryHarder
   })
   sourceSelect.addEventListener('change', () => {
     selectedDeviceId = sourceSelect.value
