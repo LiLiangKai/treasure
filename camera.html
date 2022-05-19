@@ -248,7 +248,10 @@
 
     function readImg(){
       const handle = () => {
-        if(decoding) return
+        if(decoding) {
+          timer = setTimeout(handle,200)
+          return
+        }
         context.drawImage(video,0,0,cameraWidth,cameraHeight,0,0,cameraWidth,cameraHeight);
         if(decodeType === 'qrcode') {
           decodeQrCode()
