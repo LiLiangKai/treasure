@@ -35,6 +35,7 @@
   <div>
     <button id="start">start</button>
     <button id="stop">stop</button>
+    <button id="start2">start2</button>
   </div>
   <div class="video-wrap">
     <video id="video" ></video>
@@ -57,6 +58,7 @@
   const deviceIds = []
   const video = document.getElementById('video')
   const startBtn = document.getElementById('start')
+  const startBtn2 = document.getElementById('start2')
   const stopBtn = document.getElementById('stop')
   const sourceSelect = document.getElementById('sourceSelect')
   const noSelectBtn = document.getElementById('noSelect')
@@ -67,6 +69,7 @@
   let scaning = false
   let selectedDeviceId
   let tryHarder = false
+  let startTime = Date.now()
   
   
   function initMultiFormatReader () {
@@ -113,26 +116,41 @@
     loaded = true
   }
 
+  function handleScan (result, error) {
+        const now = Date.now()
+        if(result) {
+          console.log('decode result: ', result)
+          console.log('decodeTime: ', now - startTime, 'ms')
+          alert(result.text)
+          resultDom.innerText = result.text
+        }
+        if(error && !(error instanceof ZXing.NotFoundException)) {
+          console.log('error: ', error)
+        }
+        startTime = now
+      }
+
   function startScan () {
     if(!loaded || scaning) return
     if(!deviceIds.length) {
       throw 'not found any Video Device'
     }
     console.log('use device: ', selectedDeviceId)
-    let startTime = Date.now()
-    codeReader.decodeFromVideoDevice(selectedDeviceId, video, (result, error) => {
-      const now = Date.now()
-      if(result) {
-        console.log('decode result: ', result)
-        console.log('decodeTime: ', now - startTime, 'ms')
-        alert(result.text)
-        resultDom.innerText = result.text
+    startTime = Date.now()
+    codeReader.decodeFromVideoDevice(selectedDeviceId, video, handleScan)
+    scaning = true
+  }
+
+  function startScan2 () {
+    startTime = Date.now()
+    codeReader.decodeFromConstraints({
+      audio: false,
+      video: {
+        facingMode: "environment",
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
       }
-      if(error && !(error instanceof ZXing.NotFoundException)) {
-        console.log('error: ', error)
-      }
-      startTime = now
-    })
+    }, video, handleScan)
     scaning = true
   }
 
@@ -143,6 +161,7 @@
   }
 
   startBtn.addEventListener('click', startScan)
+  startBtn2.addEventListener('click', startScan2)
   stopBtn.addEventListener('click', stop)
   noSelectBtn.addEventListener('click', () => {
     sourceSelect.value = ''
@@ -172,15 +191,7 @@
         return initMultiFormatReader()
     }
   }
-/*
-library 扫描条形码解码过程：
-1. 获取视频流当前帧，绘制到canvas上
-2. 调用canvas的getImageData方法获取imageData，imageData数据类型为Uint8ClampedArray
-3. 以一像素为一行，以行为最小解析单元，从中间向外检查行，在中间上下方交替搜索，有两种策略：
-  3.1 跳行解码，以高度进行划分，分为32份，每一份高度大约15像素左右(记为rowStep)，从中间行(height/2，，记为middle)处开始解码，从正反方向分别尝试解码，若能解码出结果则返回；否则继续解码 (middle-rowStep*1)行，接着 (middle+rowStep*1)行，(middle-rowStep*2)行，(middle+rowStep*2)行 ...。优缺点：速度快，但准确率低
-  3.2 逐行解码，流程跟3.1相同，只是rowStep为1。优缺点：准确率高，但速度慢。
-4. 解码根据条形码类型调用不同的解码算法
-*/
+
 </script>
 </body>
 </html>
