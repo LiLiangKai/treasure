@@ -22,26 +22,55 @@
     video.rotate {
       transform: rotate(90deg);
     }
+    .topbar {
+      position: fixed;
+      top: 0;
+      z-index: 10;
+    }
+    .buttons {
+      position: fixed;
+      top: 50px;
+      z-index: 10;
+    }
+    .operates {
+      position: fixed;
+      bottom: 20px;
+      z-index: 10;
+    }
+    #video {
+      position: fixed;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    #canvas {
+      position: fixed;
+      z-index: 1;
+      bottom: 0;
+      width: 100%;
+    }
   </style>
 </head>
 <body>
-  <div style="border-bottom: 1px solid #ddd;padding-bottom: 20px;margin-bottom: 20px;">
+  <div class="topbar" style="border-bottom: 1px solid #ddd;padding-bottom: 20px;margin-bottom: 20px;">
     <button onclick="switchMode('barcode')">barCode</button>
     <button onclick="switchMode('qrcode')">qrCode</button>
     <button onclick="switchMode('all')">all</button>
     <br>
     <span id="curMode"></span>
   </div>
-  <div>
+  <div class="buttons">
     <button id="start">start</button>
     <button id="stop">stop</button>
-    <button id="start2">start2</button>
+    <button id="start2">1980x1080</button>
   </div>
   <div class="video-wrap">
     <video id="video" ></video>
+    <canvas id="canvas"></canvas>
   </div>
-  <div>result: <span id="result"></span></div>
-  <div>
+  <div class="operates">
+    <div>result: <span id="result"></span></div>
     <p>select one camera</p>
     <p>
       <select id="sourceSelect" style="max-width:400px"></select>
@@ -57,6 +86,8 @@
   new window.VConsole()
   const deviceIds = []
   const video = document.getElementById('video')
+  const canvas = document.getElementById('canvas')
+  const context = canvas.getContext('2d')
   const startBtn = document.getElementById('start')
   const startBtn2 = document.getElementById('start2')
   const stopBtn = document.getElementById('stop')
@@ -70,6 +101,19 @@
   let selectedDeviceId
   let tryHarder = false
   let startTime = Date.now()
+
+  // video.addEventListener('canplay', () => {
+  //   canvas.width = video.videoWidth
+  //   canvas.height = video.videoHeight
+
+  //   function drawImage() {
+  //     context.drawImage(video,0,0,video.videoWidth,video.videoHeight,0,0,canvas.width,canvas.height);
+  //     if(scaning) {
+  //       requestAnimationFrame(drawImage)
+  //     }
+  //   }
+  //   requestAnimationFrame(drawImage)
+  // })
   
   
   function initMultiFormatReader () {
@@ -147,8 +191,8 @@
       audio: false,
       video: {
         facingMode: "environment",
-        width: { ideal: 480 },
-        height: { ideal: 640 }
+        width: { min: 640, ideal: 1980 },
+        height: { min: 480, ideal: 1080 }
       }
     }, video, handleScan)
     scaning = true
@@ -191,7 +235,15 @@
         return initMultiFormatReader()
     }
   }
-
+/*
+library 扫描条形码解码过程：
+1. 获取视频流当前帧，绘制到canvas上
+2. 调用canvas的getImageData方法获取imageData，imageData数据类型为Uint8ClampedArray
+3. 以一像素为一行，以行为最小解析单元，从中间向外检查行，在中间上下方交替搜索，有两种策略：
+  3.1 跳行解码，以高度进行划分，分为32份，每一份高度大约15像素左右(记为rowStep)，从中间行(height/2，，记为middle)处开始解码，从正反方向分别尝试解码，若能解码出结果则返回；否则继续解码 (middle-rowStep*1)行，接着 (middle+rowStep*1)行，(middle-rowStep*2)行，(middle+rowStep*2)行 ...。优缺点：速度快，但准确率低
+  3.2 逐行解码，流程跟3.1相同，只是rowStep为1。优缺点：准确率高，但速度慢。
+4. 解码根据条形码类型调用不同的解码算法
+*/
 </script>
 </body>
 </html>
