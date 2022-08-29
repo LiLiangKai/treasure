@@ -29,8 +29,11 @@
     }
     .buttons {
       position: fixed;
-      top: 50px;
+      top: 0px;
       z-index: 10;
+    }
+    .buttons button {
+      margin-bottom: 5px;
     }
     .operates {
       position: fixed;
@@ -53,7 +56,7 @@
   </style>
 </head>
 <body>
-  <div class="topbar" style="border-bottom: 1px solid #ddd;padding-bottom: 20px;margin-bottom: 20px;">
+  <div class="topbar" style="display: none; border-bottom: 1px solid #ddd;padding-bottom: 20px;margin-bottom: 20px;">
     <button onclick="switchMode('barcode')">barCode</button>
     <button onclick="switchMode('qrcode')">qrCode</button>
     <button onclick="switchMode('all')">all</button>
@@ -61,9 +64,12 @@
     <span id="curMode"></span>
   </div>
   <div class="buttons">
-    <button id="start">start</button>
+    <button id="start" style="display: none;">start</button>
     <button id="stop">stop</button>
-    <button id="start2">1980x1080</button>
+    <button onclick="startScan2(1980,1080)">1980x1080</button>
+    <button onclick="startScan2(1280,720)">1280x720</button>
+    <button onclick="startScan2(960,720)">960x720</button>
+    <button onclick="startScan2(640,480)">640x480</button>
   </div>
   <div class="video-wrap">
     <video id="video" ></video>
@@ -71,14 +77,16 @@
   </div>
   <div class="operates">
     <div>result: <span id="result"></span></div>
-    <p>select one camera</p>
-    <p>
-      <select id="sourceSelect" style="max-width:400px"></select>
-    </p>
-    <br>
-    <button id="noSelect">no select camera</button>
-    <br>
-    <button id="tryHarder">try harder</button>
+    <div style="display: none;">
+      <p>select one camera</p>
+      <p>
+        <select id="sourceSelect" style="max-width:400px"></select>
+      </p>
+      <br>
+      <button id="noSelect">no select camera</button>
+      <br>
+      <button id="tryHarder">try harder</button>
+    </div>
   </div>
 <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
 <script type="text/javascript" src="https://unpkg.com/@zxing/library@latest"></script>
@@ -124,6 +132,8 @@
     console.log('ZXing BrowserMultiFormatReader reader initialized')
     codeReader.listVideoInputDevices().then(updateVideoInputDevices)
   }
+
+  initMultiFormatReader()
 
   function initBarCodeReader () {
     const hints = new Map()
@@ -185,14 +195,18 @@
     scaning = true
   }
 
-  function startScan2 () {
+  function startScan2 (width, height) {
+    if(scaning) {
+      stop()
+    }
+
     startTime = Date.now()
     codeReader.decodeFromConstraints({
       audio: false,
       video: {
         facingMode: "environment",
-        width: { min: 640, ideal: 1980 },
-        height: { min: 480, ideal: 1080 }
+        width: { min: 640, ideal: width || 1980 },
+        height: { min: 480, ideal: height || 1080 }
       }
     }, video, handleScan)
     scaning = true
@@ -205,8 +219,8 @@
   }
 
   startBtn.addEventListener('click', startScan)
-  startBtn2.addEventListener('click', startScan2)
   stopBtn.addEventListener('click', stop)
+
   noSelectBtn.addEventListener('click', () => {
     sourceSelect.value = ''
     selectedDeviceId = ''
