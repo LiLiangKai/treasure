@@ -67,9 +67,11 @@
     <button id="start" style="display: none;">start</button>
     <button id="stop">stop</button>
     <button onclick="startScan2(1980,1080)">1980x1080</button>
+    <!-- <button onclick="startScan2(1920,1080)">1920x1080</button> -->
     <button onclick="startScan2(1280,720)">1280x720</button>
     <button onclick="startScan2(960,720)">960x720</button>
     <button onclick="startScan2(640,480)">640x480</button>
+    <button onclick="startScan2(2560,1440)">2560x1440</button>
   </div>
   <div class="video-wrap">
     <video id="video" ></video>
@@ -89,7 +91,7 @@
     </div>
   </div>
 <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
-<script type="text/javascript" src="./library.min.js"></script>
+<script type="text/javascript" src="https://unpkg.com/@zxing/library@latest"></script>
 <script>
   new window.VConsole()
   const deviceIds = []
@@ -206,7 +208,10 @@
       video: {
         facingMode: "environment",
         width: { min: 640, ideal: width || 1980 },
-        height: { min: 480, ideal: height || 1080 }
+        height: { min: 480, ideal: height || 1080 },
+        focusMode: 'continuous',
+        frameRate: 30,
+        // aspectRatio: 1.8
       }
     }, video, handleScan)
     scaning = true
