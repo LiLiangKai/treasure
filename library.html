@@ -302,10 +302,15 @@ function findMaxVideoDevice() {
               height: video.videoHeight
             }
             console.log(`${deviceId} = ${size.width}x${size.height}`)
-            const tracks = stream.getTracks();
-            tracks && tracks.forEach(track => {
-                track.stop()
-            })
+            const track = stream.getTracks()[0];
+            if(track) {
+              const cap = track.getCapabilities()
+              if (cap) {
+                size.width = (cap.width && cap.width.max) || size.width
+                size.height = (cap.height && cap.height.max) || size.height
+              }
+              track.stop()
+            }
             video = null
             resolve(size)
           }
@@ -332,12 +337,7 @@ function findMaxVideoDevice() {
               ...size
             }
           }
-          if(!maxCamera.deviceId) {
-            maxCamera = {
-              deviceId,
-              ...size
-            }
-          } else if(size.width >= maxCamera.width) {
+          if(!maxCamera.deviceId || (size.width > maxCamera.width && size.height > maxCamera.height)) {
             maxCamera = {
               deviceId,
               ...size
