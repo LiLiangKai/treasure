@@ -217,9 +217,11 @@
         height: { min: 480, ideal: height || 1080 },
         focusMode: 'continuous',
         frameRate: 30,
-        advanced: [
-          {width: 1920, height: 1080},
-        ]
+        // advanced: [
+        //     {width: 1920, height: 1080},
+        //     {width: 1280, height: 720},
+        //     {width: 960, height: 720},
+        // ]
         // aspectRatio: 1.8
       }
     }, video, handleScan)
@@ -281,11 +283,13 @@ function findMaxVideoDevice() {
         audio: false,
         video: {
           deviceId,
-          width: {min: 640, ideal: 1920},
-          height: {min: 480, ideal: 1080},
-          frameRate: {min: 30},
+          // width: {min: 640, ideal: 1920},
+          // height: {min: 480, ideal: 1080},
+          // frameRate: {min: 30},
           advanced: [
             {width: 1920, height: 1080},
+            {width: 1280, height: 720},
+            {width: 960, height: 720},
           ]
         }
       }
